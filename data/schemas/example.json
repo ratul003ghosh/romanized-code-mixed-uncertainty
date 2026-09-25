@@ -1,0 +1,24 @@
+{
+  "id": "BG_000001",
+  "text": "...",
+  "normalized_text": "",
+  "pii": [],
+  "preserved_entities": [],
+  "uncertainties": [
+    {
+      "span": "5oo tk",
+      "type": "NUMERIC_AMBIGUITY",
+      "candidates": [
+        "500 tk",
+        "5000 tk"
+      ],
+      "aleatoric": 0.0,
+      "epistemic": 0.0
+    }
+  ],
+  "routing": "",
+  "metadata": {
+    "language": "banglish",
+    "source": "synthetic"
+  }
+}
