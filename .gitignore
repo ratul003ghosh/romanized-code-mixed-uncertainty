@@ -14,3 +14,5 @@ models/
 *.ckpt
 *.pt
 *.pth
+venv/
+data/processed/*.jsonl
