@@ -1,0 +1,13 @@
+# Install vllm FIRST (it pins its own torch build), then the rest.
+# After a working install, freeze exact versions:  pip freeze > requirements.lock.txt
+vllm
+transformers
+datasets
+peft
+accelerate
+xgrammar
+outlines
+jsonschema
+datasketch
+pandas
+pytest
