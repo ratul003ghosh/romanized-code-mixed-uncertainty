@@ -1,0 +1,4 @@
+# large or possibly PII-bearing run files stay local; summary.json and report.md can be committed
+*.jsonl
+*.tar.gz
+*.log

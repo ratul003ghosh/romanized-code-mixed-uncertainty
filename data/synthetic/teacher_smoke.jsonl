@@ -1,0 +1,5 @@
+{"id": "smoke-1", "text": "bhai amar nagad theke 12oo taka cash out hoy nai, trx id 7GH2K91LX, number 01900000000", "note": "numeric digit-letter swap, TXN_ID, PHONE"}
+{"id": "smoke-2", "text": "kal ke doctor er appointment ache naki? amar mail test.user@example.com e confirm pathay dio", "note": "kal = yesterday/tomorrow, EMAIL"}
+{"id": "smoke-3", "text": "amar card 4111 1111 1111 1111 diye payment korte parchi na, OTP 482913 ashche kintu kaj kore na", "note": "test Visa number (Luhn-valid, public test card), OTP"}
+{"id": "smoke-4", "text": "hitare ektu kow je ami aijja ashmu na, 1987654321 number e call dite", "note": "dialect words, bare 10-digit number (PII_BOUNDARY)"}
+{"id": "smoke-5", "text": "eta ektu thik kore dao plz, 5k er moddhe kichu suggest koro", "note": "INTENT, numeric 5k"}
