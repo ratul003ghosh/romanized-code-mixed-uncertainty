@@ -11,7 +11,8 @@ Based on the proposal, Section 2 and Section 2.1.
 | id | string | Unique ID, e.g. BG_000001 (Banglish), HG_000001 (Hinglish) |
 | schema_version | string | Currently "0.1" |
 | input | string | Original raw text. Never changed. |
-| normalized_text | string | Text after preprocessing. Empty if not done yet. |
+| clean_input | string | Input after light cleaning (spaces, dots, invisible characters). Words, digits and case unchanged. |
+| normalized_text | string | Normalized text produced by teachers or student (evaluated with CER/WER). Empty until then. |
 | sanitized_prompt | string | Clean, PII-masked prompt (teacher/student output) |
 | pii | list | Detected PII spans (see below) |
 | preserved_entities | list | Non-PII entities that must be kept, e.g. amounts |
@@ -21,8 +22,8 @@ Based on the proposal, Section 2 and Section 2.1.
 
 ## Span positions
 
-`start` and `end` are character positions in `input` (Python style: `input[start:end]` gives the span text).
-Positions always refer to `input`, not `normalized_text`.
+`start` and `end` are character positions in `clean_input` (Python style: `clean_input[start:end]` gives the span text).
+Positions always refer to `clean_input` (the text PII detection runs on), not `input` or `normalized_text`.
 
 ## Allowed values
 

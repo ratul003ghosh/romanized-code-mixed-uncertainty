@@ -2,6 +2,7 @@
   "id": "BG_000001",
   "schema_version": "0.1",
   "input": "kalk3 bkash e 5oo tk send korsi trans id 9X87K, taka pay nai. 1987654321 eta check koren",
+  "clean_input": "kalk3 bkash e 5oo tk send korsi trans id 9X87K, taka pay nai. 1987654321 eta check koren",
   "normalized_text": "",
   "sanitized_prompt": "Yesterday I sent 500 BDT via bKash (transaction ID <TXN_ID_1>), but the money was not received. Please check <ID_1>.",
   "pii": [
