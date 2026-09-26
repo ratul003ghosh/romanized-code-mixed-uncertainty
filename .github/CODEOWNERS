@@ -1,7 +1,0 @@
-# Replace the @handles with your group members' GitHub usernames.
-# Changes to these paths need a review from the listed owners.
-*                          @MEMBER_A @MEMBER_B @MEMBER_C @MEMBER_D
-/configs/schema.json       @MEMBER_A @MEMBER_B @MEMBER_C @MEMBER_D
-/annotation/               @ANNOTATION_LEAD
-/src/pii_inject/ /src/noise/   @DATA_LEAD
-/src/teachers/ /src/decomp/    @TEACHER_LEAD
