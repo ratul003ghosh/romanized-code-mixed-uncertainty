@@ -1,7 +1,7 @@
 {
   "member": "himel",
-  "date": "2026-09-26T14:19:09+00:00",
-  "commit": "20dd640747ea2793091f98957053c1ae69ec0534",
+  "date": "2026-09-26T16:57:41+00:00",
+  "commit": "d7ddbf13f1f42c6867042e9e740611c1edda585f",
   "shard": null,
   "seed": 0,
   "gpus": [
@@ -13,6 +13,9 @@
   "vllm": "0.30.0",
   "vllm_pip_spec": "vllm",
   "decoding_api": "structured_outputs",
+  "decoding_schema_stripped_keys": [
+    "uniqueItems"
+  ],
   "model": "Qwen/Qwen2.5-1.5B-Instruct",
   "schema_file": "configs/schema.json",
   "n_inputs": 3,
@@ -36,7 +39,5 @@
       "valid": true,
       "errors": []
     }
-  ],
-  "tests_passed": 14,
-  "tests_ok": false
+  ]
 }
