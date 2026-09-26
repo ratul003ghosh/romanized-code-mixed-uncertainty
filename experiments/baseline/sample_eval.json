@@ -1,0 +1,272 @@
+{
+  "model_name": "Regex Baseline",
+  "num_gold_samples": 4,
+  "num_pred_samples": 4,
+  "pii_span_metrics": {
+    "exact_match": {
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "tp": 3,
+      "fp": 2,
+      "fn": 2
+    },
+    "partial_match": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 5,
+      "fp": 0,
+      "fn": 0
+    },
+    "per_type": {
+      "NID": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 1,
+        "fp": 0,
+        "fn": 0
+      },
+      "EMAIL": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 1,
+        "fn": 1
+      },
+      "PHONE": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5,
+        "tp": 1,
+        "fp": 1,
+        "fn": 1
+      },
+      "TXN_ID": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 1,
+        "fp": 0,
+        "fn": 0
+      }
+    }
+  },
+  "pii_leakage": {
+    "total_gold_pii": 5,
+    "leaked_pii_count": 0,
+    "leakage_rate": 0.0,
+    "leakage_percentage": 0.0,
+    "sample_leaks": []
+  },
+  "overmasking_utility": {
+    "total_preserved_entities": 4,
+    "erroneously_masked_count": 1,
+    "overmasking_rate": 0.25,
+    "utility_preservation_rate": 0.75,
+    "sample_overmasked": [
+      {
+        "id": "BG_SYN_001",
+        "entity": {
+          "type": "AMOUNT",
+          "value": "500 tk"
+        },
+        "was_tagged_as_pii": false,
+        "was_lost_in_sanitization": true
+      }
+    ]
+  },
+  "uncertainty_calibration": {
+    "sample_count": 2,
+    "positive_ambiguous_count": 1,
+    "ambiguity_auroc": 1.0,
+    "ambiguity_ece": 0.5,
+    "ambiguity_brier_score": 0.5,
+    "calibration_bins": [
+      {
+        "bin": 0,
+        "range": [
+          0.0,
+          0.1
+        ],
+        "count": 2,
+        "accuracy": 0.5,
+        "confidence": 0.0,
+        "error": 0.5
+      },
+      {
+        "bin": 1,
+        "range": [
+          0.1,
+          0.2
+        ],
+        "count": 0,
+        "accuracy": 0.0,
+        "confidence": 0.0,
+        "error": 0.0
+      },
+      {
+        "bin": 2,
+        "range": [
+          0.2,
+          0.3
+        ],
+        "count": 0,
+        "accuracy": 0.0,
+        "confidence": 0.0,
+        "error": 0.0
+      },
+      {
+        "bin": 3,
+        "range": [
+          0.3,
+          0.4
+        ],
+        "count": 0,
+        "accuracy": 0.0,
+        "confidence": 0.0,
+        "error": 0.0
+      },
+      {
+        "bin": 4,
+        "range": [
+          0.4,
+          0.5
+        ],
+        "count": 0,
+        "accuracy": 0.0,
+        "confidence": 0.0,
+        "error": 0.0
+      },
+      {
+        "bin": 5,
+        "range": [
+          0.5,
+          0.6
+        ],
+        "count": 0,
+        "accuracy": 0.0,
+        "confidence": 0.0,
+        "error": 0.0
+      },
+      {
+        "bin": 6,
+        "range": [
+          0.6,
+          0.7
+        ],
+        "count": 0,
+        "accuracy": 0.0,
+        "confidence": 0.0,
+        "error": 0.0
+      },
+      {
+        "bin": 7,
+        "range": [
+          0.7,
+          0.8
+        ],
+        "count": 0,
+        "accuracy": 0.0,
+        "confidence": 0.0,
+        "error": 0.0
+      },
+      {
+        "bin": 8,
+        "range": [
+          0.8,
+          0.9
+        ],
+        "count": 0,
+        "accuracy": 0.0,
+        "confidence": 0.0,
+        "error": 0.0
+      },
+      {
+        "bin": 9,
+        "range": [
+          0.9,
+          1.0
+        ],
+        "count": 0,
+        "accuracy": 0.0,
+        "confidence": 0.0,
+        "error": 0.0
+      }
+    ]
+  },
+  "routing_decision": {
+    "total_evaluated": 4,
+    "accuracy": 0.5,
+    "macro_f1": 0.375,
+    "per_class": {
+      "PROCEED": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "gold_support": 1
+      },
+      "PROCEED_WITH_FLAGS": {
+        "precision": 0.3333,
+        "recall": 1.0,
+        "f1": 0.5,
+        "gold_support": 1
+      },
+      "ASK_USER": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "gold_support": 1
+      },
+      "ESCALATE": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "gold_support": 1
+      }
+    },
+    "confusion_matrix": {
+      "PROCEED": {
+        "PROCEED": 1,
+        "PROCEED_WITH_FLAGS": 0,
+        "ASK_USER": 0,
+        "ESCALATE": 0
+      },
+      "PROCEED_WITH_FLAGS": {
+        "PROCEED": 0,
+        "PROCEED_WITH_FLAGS": 1,
+        "ASK_USER": 0,
+        "ESCALATE": 0
+      },
+      "ASK_USER": {
+        "PROCEED": 0,
+        "PROCEED_WITH_FLAGS": 1,
+        "ASK_USER": 0,
+        "ESCALATE": 0
+      },
+      "ESCALATE": {
+        "PROCEED": 0,
+        "PROCEED_WITH_FLAGS": 1,
+        "ASK_USER": 0,
+        "ESCALATE": 0
+      }
+    }
+  },
+  "risk_coverage": {
+    "total_prompts": 4,
+    "coverage_rate": 1.0,
+    "escalation_rate": 0.0,
+    "covered_prompts_count": 4,
+    "escalated_prompts_count": 0,
+    "covered_leakage_rate": 0.0,
+    "escalated_leakage_rate": 0.0,
+    "leakage_reduction_by_routing": 0.0
+  },
+  "text_normalization": {
+    "total_evaluated": 4,
+    "mean_cer": 1.0,
+    "mean_wer": 1.0
+  }
+}
