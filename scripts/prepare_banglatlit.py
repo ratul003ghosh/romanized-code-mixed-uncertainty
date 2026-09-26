@@ -3,7 +3,8 @@ import json
 import os
 from datasets import load_dataset
 
-N_PER_SPLIT = 200          # small sample for the prototype
+# rows to take per split (prototype sample, not the full dataset)
+N_PER_SPLIT = {"train": 3000, "validation": 500, "test": 500}
 OUT_PATH = "data/processed/banglatlit_sample.jsonl"
 SPLIT_MAP = {"train": "train", "validation": "dev", "test": "test"}
 
@@ -39,18 +40,17 @@ def main():
     number = 1
     skipped = 0
     with open(OUT_PATH, "w", encoding="utf-8") as f:
-        for source_split in ["train", "validation", "test"]:
+        for source_split, limit in N_PER_SPLIT.items():
             kept = 0
             for row in ds[source_split]:
                 text = (row["text_transliterated"] or "").strip()
                 if not text:
                     skipped += 1
                     continue
-                record = to_record(row, number, source_split)
-                f.write(json.dumps(record, ensure_ascii=False) + "\n")
+                f.write(json.dumps(to_record(row, number, source_split), ensure_ascii=False) + "\n")
                 number += 1
                 kept += 1
-                if kept >= N_PER_SPLIT:
+                if kept >= limit:
                     break
             print(f"{source_split}: kept {kept}")
 
