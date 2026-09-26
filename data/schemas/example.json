@@ -1,24 +1,29 @@
 {
   "id": "BG_000001",
-  "text": "...",
+  "schema_version": "0.1",
+  "input": "kalk3 bkash e 5oo tk send korsi trans id 9X87K, taka pay nai. 1987654321 eta check koren",
   "normalized_text": "",
-  "pii": [],
-  "preserved_entities": [],
-  "uncertainties": [
-    {
-      "span": "5oo tk",
-      "type": "NUMERIC_AMBIGUITY",
-      "candidates": [
-        "500 tk",
-        "5000 tk"
-      ],
-      "aleatoric": 0.0,
-      "epistemic": 0.0
-    }
+  "sanitized_prompt": "Yesterday I sent 500 BDT via bKash (transaction ID <TXN_ID_1>), but the money was not received. Please check <ID_1>.",
+  "pii": [
+    {"type": "TXN_ID", "placeholder": "<TXN_ID_1>", "text": "9X87K", "start": 41, "end": 46},
+    {"type": "ID_NUMBER", "placeholder": "<ID_1>", "text": "1987654321", "start": 62, "end": 72}
   ],
-  "routing": "",
+  "preserved_entities": [
+    {"type": "AMOUNT", "value": "500 BDT"},
+    {"type": "SERVICE", "value": "bKash"}
+  ],
+  "uncertainties": [
+    {"span": "5oo tk", "start": 14, "end": 20, "types": ["NUMERIC_AMBIGUITY"],
+     "candidates": ["500 BDT", "5000 BDT"], "aleatoric": 0.21, "epistemic": 0.63},
+    {"span": "1987654321", "start": 62, "end": 72, "types": ["PII_BOUNDARY"],
+     "candidates": ["NID", "account number"], "aleatoric": 0.74, "epistemic": 0.12}
+  ],
+  "routing": "ESCALATE",
   "metadata": {
     "language": "banglish",
-    "source": "synthetic"
+    "surface_form": "banglish",
+    "source": "proposal_example",
+    "label_source": "illustrative",
+    "split": "none"
   }
 }
