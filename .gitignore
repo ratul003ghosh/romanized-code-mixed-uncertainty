@@ -1,16 +1,18 @@
-
+# Data is never committed (BanglishRev contains real PII)
+data/raw/*
+data/silver/*
+data/gold/*
+!data/*/.gitkeep
+# Environment and caches
+.venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+# Model weights and run outputs
+checkpoints/
+runs/
+wandb/
+*.safetensors
+*.bin
 .env
-.venv
-env/
-venv/
-results/
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
-models/
-*.ckpt
-*.pt
-*.pth

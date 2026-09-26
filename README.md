@@ -1,66 +1,21 @@
+# Know Why You're Unsure — code
 
-# Know Why You're Unsure: Distilling Decomposed, Typed Span Uncertainty into Small Models for Risk-Controlled Sanitization of Romanized Code-Mixed Prompts
+Setup on Kaggle: open `kaggle_block1.ipynb` (import it into a new Kaggle notebook) and follow its cells.
+Local setup (Linux/WSL2, NVIDIA GPU): `bash scripts/setup_env.sh`
 
-## 1. Problem
-Romanized code-mixed prompts (like Banglish and Hinglish) contain severe spelling variations, dialect differences, and ambiguous context, making PII detection and risk-controlled sanitization highly challenging.
+Output contract: `configs/schema.json` (v1.0.0, frozen; tag `schema-v1.0.0`).
+Changing it requires a version bump in `$id`, a new tag, and passing tests.
 
-## 2. Motivation
-Traditional PII masking either over-redacts (reducing utility) or under-redacts (leaking privacy). Large models can detect nuance but are too expensive.
+Validate outputs: `python -m src.common.validate FILE.jsonl`
+Tests: `python -m pytest -q tests/`
 
-## 3. Core Idea
-Distill the disagreement (uncertainty) of a teacher ensemble into a small 1.5B student model, predicting span-level typed uncertainty (aleatoric vs epistemic) to dynamically route uncertain cases.
-
-## 4. Architecture
-Input -> Preprocessing -> PII Masking -> Teacher Ensemble -> Uncertainty Estimation -> Silver Labels -> Student Model -> Routing
-
-## 5. Research Questions
-See `docs/research-questions.md`.
-
-## 6. Dataset Strategy
-Use existing datasets, augmented with synthetic examples for testing and teacher-generated silver data for student distillation.
-
-## 7. PII Strategy
-Rule-based + regex/NER for clear identifiers (phones, accounts), avoiding real PII in the repository.
-
-## 8. Uncertainty Approach
-Calculate aleatoric (data) and epistemic (model) uncertainty from teacher ensemble disagreement (entropy, JSD).
-
-## 9. Routing
-Threshold-based routing based on uncertainty scores: ASK_USER, ESCALATE, PROCEED, PROCEED_WITH_FLAGS.
-
-## 10. Student Model
-1.5B model (e.g., Qwen/Llama) fine-tuned with QLoRA to predict uncertainty without the full ensemble.
-
-## 11. Baselines
-Regex/NER, Transliteration, Direct Teacher, Student confidence.
-
-## 12. Metrics
-PII Leakage, Span F1, AUROC, Routing Accuracy, ECE.
-
-## 13. Repository Structure
-Standard src/docs/data/scripts layout.
-
-## 14. Installation
-```bash
-pip install -r requirements.txt
-```
-
-## 15. Running the prototype
-See `scripts/run_full_experiment.py`.
-
-## 16. GPU Instructions
-See `docs/gpu-run.md`.
-
-## 17. Current Status
-See `docs/status.md`.
-
-## 18. Limitations
-See `docs/limitations.md`.
-
-## 19. Team
-- Ratul (Research Lead / Integration)
-- Zarif (Teacher + Uncertainty Lead)
-- Saber (Dataset + Student Lead)
-- Himel (PII + Preprocessing)
-- Sadat (Evaluation + Baselines)
-- Mashrafi (Examples + Documentation)
+| Folder | Purpose (proposal section) |
+|---|---|
+| data/raw, silver, gold | source corpora, teacher targets, human gold (3.1–3.3); never committed |
+| src/common | schema validation, shared utilities |
+| src/pii_inject | synthetic PII in three regimes (3.2) |
+| src/noise | typos, digit–letter swaps, OCR confusions (3.2) |
+| src/teachers | LoRA teachers, teacher-forced scoring (4.1–4.2) |
+| src/decomp | aleatoric/epistemic decomposition, logistic heads (4.3–4.4) |
+| annotation | guidelines and annotation files (2.1, 3.3) |
+| configs | schema and experiment configs |
