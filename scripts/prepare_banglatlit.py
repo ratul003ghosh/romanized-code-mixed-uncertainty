@@ -1,4 +1,4 @@
-"""Convert a sample of BanglaTLit into our schema v0.1 (JSONL, one record per line)."""
+"""Convert a sample of BanglaTLit into our schema v0.2 (JSONL, one record per line)."""
 import json
 import os
 from datasets import load_dataset
@@ -11,14 +11,14 @@ SPLIT_MAP = {"train": "train", "validation": "dev", "test": "test"}
 def to_record(row, number, source_split):
     return {
         "id": f"BG_{number:06d}",
-        "schema_version": "0.1",
+        "schema_version": "0.2",
         "input": row["text_transliterated"],
-        "normalized_text": "",
-        "sanitized_prompt": "",
+        "normalized_text": None,
+        "sanitized_prompt": None,
         "pii": [],
         "preserved_entities": [],
         "uncertainties": [],
-        "routing": "",
+        "routing": None,
         "metadata": {
             "language": "banglish",
             "surface_form": "banglish",
