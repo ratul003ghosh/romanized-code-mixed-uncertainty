@@ -100,7 +100,7 @@
           "type": "array",
           "minItems": 1,
           "maxItems": 5,
-          "uniqueItems": true,
+      
           "items": {
             "type": "string",
             "enum": ["TRANSLITERATION", "NUMERIC_AMBIGUITY", "PII_BOUNDARY", "DIALECT_MEANING", "INTENT"]
