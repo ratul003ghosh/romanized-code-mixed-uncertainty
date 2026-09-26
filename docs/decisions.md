@@ -7,3 +7,6 @@
 | 2026-09-27 | Silver inputs v0: 5,000 template records (seed 1) + 20,000 BanglaTLit carrier records with synthetic PII (seed 2), generator pii_inject-0.1.0. Kaggle dataset banglish-silver-inputs v1. | First input set for the teacher pilot (section 3.2) | himel (draft) |
 | 2026-09-27 | Default split: BanglaTLit test = gold pool, val = dev pool, train + PT = silver (overlaps with the pools removed) | Keeps gold sentences out of training (section 3.4) | himel (draft) |
 | 2026-09-27 | Carrier lines with digit runs of 7+, Bangla digit runs, e-mails or +880 dropped before injection | Scraped text may contain real PII; stricter regex detector to follow | himel (draft) |
+| 2026-09-27 | Silver inputs v0: 5,000 template records (seed 1) + 20,000 BanglaTLit carrier records with synthetic PII (seed 2), generator pii_inject-0.1.0. Kaggle dataset banglish-silver-inputs v1. | First input set for the teacher pilot (section 3.2) | himel (draft) |
+| 2026-09-27 | Default split: BanglaTLit test = gold pool, val = dev pool, train + PT = silver (overlaps with the pools removed) | Keeps gold sentences out of training (section 3.4) | himel (draft) |
+| 2026-09-27 | Carrier lines with digit runs of 7+, Bangla digit runs, e-mails or +880 dropped before injection | Scraped text may contain real PII; stricter regex detector to follow | himel (draft) |
