@@ -1,0 +1,360 @@
+[
+  {
+    "id": "EX_CLEAN_001",
+    "expected_pii_spans": [],
+    "expected_uncertainty_spans": [],
+    "expected_routing": "PROCEED"
+  },
+  {
+    "id": "EX_CLEAN_002",
+    "expected_pii_spans": [],
+    "expected_uncertainty_spans": [],
+    "expected_routing": "PROCEED"
+  },
+  {
+    "id": "EX_CLEAN_003",
+    "expected_pii_spans": [],
+    "expected_uncertainty_spans": [],
+    "expected_routing": "PROCEED"
+  },
+  {
+    "id": "EX_NUM_001",
+    "expected_pii_spans": [],
+    "expected_uncertainty_spans": [
+      {
+        "span": "5oo tk",
+        "type": "NUMERIC_AMBIGUITY",
+        "candidates": [
+          "500 BDT",
+          "5000 BDT"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER"
+  },
+  {
+    "id": "EX_NUM_002",
+    "expected_pii_spans": [],
+    "expected_uncertainty_spans": [
+      {
+        "span": "5oo taka",
+        "type": "NUMERIC_AMBIGUITY",
+        "candidates": [
+          "500 BDT",
+          "5000 BDT"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER"
+  },
+  {
+    "id": "EX_NUM_003",
+    "expected_pii_spans": [],
+    "expected_uncertainty_spans": [
+      {
+        "span": "2oo tk",
+        "type": "NUMERIC_AMBIGUITY",
+        "candidates": [
+          "200 BDT",
+          "2000 BDT"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER"
+  },
+  {
+    "id": "EX_TRANS_001",
+    "expected_pii_spans": [],
+    "expected_uncertainty_spans": [
+      {
+        "span": "kal",
+        "type": "TRANSLITERATION",
+        "candidates": [
+          "yesterday",
+          "tomorrow"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER"
+  },
+  {
+    "id": "EX_TRANS_002",
+    "expected_pii_spans": [],
+    "expected_uncertainty_spans": [
+      {
+        "span": "kal",
+        "type": "TRANSLITERATION",
+        "candidates": [
+          "yesterday",
+          "tomorrow"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER"
+  },
+  {
+    "id": "EX_TRANS_003",
+    "expected_pii_spans": [],
+    "expected_uncertainty_spans": [
+      {
+        "span": "kal",
+        "type": "TRANSLITERATION",
+        "candidates": [
+          "yesterday",
+          "tomorrow"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER"
+  },
+  {
+    "id": "EX_DIALECT_001",
+    "expected_pii_spans": [],
+    "expected_uncertainty_spans": [
+      {
+        "span": "<CONFIRMED_DIALECT_TERM>",
+        "type": "DIALECT_MEANING",
+        "candidates": [
+          "<PENDING_VERIFIED_MEANING>"
+        ],
+        "expected_signal": {
+          "aleatoric": "PENDING",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER"
+  },
+  {
+    "id": "EX_DIALECT_002",
+    "expected_pii_spans": [],
+    "expected_uncertainty_spans": [
+      {
+        "span": "<CONFIRMED_DIALECT_TERM>",
+        "type": "DIALECT_MEANING",
+        "candidates": [
+          "<PENDING_VERIFIED_MEANING>"
+        ],
+        "expected_signal": {
+          "aleatoric": "PENDING",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER"
+  },
+  {
+    "id": "EX_PII_001",
+    "expected_pii_spans": [
+      {
+        "span": "01712345678",
+        "type": "PHONE",
+        "mask": "<PHONE_1>"
+      }
+    ],
+    "expected_uncertainty_spans": [],
+    "expected_routing": "PROCEED_WITH_FLAGS"
+  },
+  {
+    "id": "EX_PII_002",
+    "expected_pii_spans": [
+      {
+        "span": "9X87K",
+        "type": "TXN_ID",
+        "mask": "<TXN_ID_1>"
+      }
+    ],
+    "expected_uncertainty_spans": [],
+    "expected_routing": "PROCEED_WITH_FLAGS"
+  },
+  {
+    "id": "EX_PII_003",
+    "expected_pii_spans": [
+      {
+        "span": "1987654321",
+        "type": "IDENTIFIER",
+        "mask": "<ID_1>"
+      }
+    ],
+    "expected_uncertainty_spans": [
+      {
+        "span": "1987654321",
+        "type": "PII_BOUNDARY",
+        "candidates": [
+          "NID",
+          "account number",
+          "other identifier"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ESCALATE"
+  },
+  {
+    "id": "EX_COMBO_001",
+    "expected_pii_spans": [
+      {
+        "span": "9X87K",
+        "type": "TXN_ID",
+        "mask": "<TXN_ID_1>"
+      }
+    ],
+    "expected_uncertainty_spans": [
+      {
+        "span": "5oo tk",
+        "type": "NUMERIC_AMBIGUITY",
+        "candidates": [
+          "500 BDT",
+          "5000 BDT"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER"
+  },
+  {
+    "id": "EX_COMBO_002",
+    "expected_pii_spans": [
+      {
+        "span": "01712345678",
+        "type": "PHONE",
+        "mask": "<PHONE_1>"
+      }
+    ],
+    "expected_uncertainty_spans": [
+      {
+        "span": "kal",
+        "type": "TRANSLITERATION",
+        "candidates": [
+          "yesterday",
+          "tomorrow"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      },
+      {
+        "span": "5oo tk",
+        "type": "NUMERIC_AMBIGUITY",
+        "candidates": [
+          "500 BDT",
+          "5000 BDT"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER"
+  },
+  {
+    "id": "EX_COMBO_003",
+    "expected_pii_spans": [
+      {
+        "span": "1987654321",
+        "type": "IDENTIFIER",
+        "mask": "<ID_1>"
+      }
+    ],
+    "expected_uncertainty_spans": [
+      {
+        "span": "5oo tk",
+        "type": "NUMERIC_AMBIGUITY",
+        "candidates": [
+          "500 BDT",
+          "5000 BDT"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      },
+      {
+        "span": "1987654321",
+        "type": "PII_BOUNDARY",
+        "candidates": [
+          "NID",
+          "account number",
+          "other identifier"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ESCALATE"
+  },
+  {
+    "id": "EX_INTENT_001",
+    "expected_pii_spans": [],
+    "expected_uncertainty_spans": [
+      {
+        "span": "ki korbo",
+        "type": "INTENT",
+        "candidates": [
+          "send the money",
+          "check a transaction",
+          "report a problem"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER"
+  },
+  {
+    "id": "EX_INTENT_002",
+    "expected_pii_spans": [],
+    "expected_uncertainty_spans": [
+      {
+        "span": "dekhen",
+        "type": "INTENT",
+        "candidates": [
+          "check transaction status",
+          "verify recipient",
+          "investigate failed payment"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER"
+  }
+]
