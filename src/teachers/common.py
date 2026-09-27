@@ -21,10 +21,11 @@ def write_jsonl(path, recs):
 
 
 def load_inputs(cfg):
-    """Accepts {"id", "text"} (or "input"/"prompt") per line; extra keys are carried along."""
+    """Accepts {"id", "text"} lines or schema v0.2 records (clean_input preferred, since PII
+    offsets refer to it); extra keys are carried along."""
     out = []
     for i, r in enumerate(read_jsonl(cfg["input_file"])):
-        text = r.get("text") or r.get("input") or r.get("prompt")
+        text = r.get("clean_input") or r.get("text") or r.get("input") or r.get("prompt")
         if not text:
             continue
         out.append({**r, "id": str(r.get("id", i)), "text": text})
