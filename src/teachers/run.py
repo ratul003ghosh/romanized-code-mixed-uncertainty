@@ -17,11 +17,18 @@ def main():
     ap.add_argument("--config", required=True)
     ap.add_argument("--stage", default="all", choices=["all", "generate", "pivot", "score", "spans"])
     ap.add_argument("--limit", type=int, default=None, help="override number of inputs")
+    ap.add_argument("--input", default=None, help="override input_file (e.g. one split)")
+    ap.add_argument("--output-dir", default=None, help="override output_dir (use one folder per split)")
     args = ap.parse_args()
     with open(args.config) as f:
         cfg = yaml.safe_load(f)
     if args.limit:
         cfg["limit"] = args.limit
+    if args.input:
+        cfg["input_file"] = args.input
+    if args.output_dir:
+        cfg["output_dir"] = args.output_dir
+        cfg["run_name"] = f"{cfg.get('run_name', 'run')}:{args.output_dir.rstrip('/').split('/')[-1]}"
     os.makedirs(cfg["output_dir"], exist_ok=True)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s",
                         handlers=[logging.StreamHandler(), logging.FileHandler(out_path(cfg, "run.log"))])

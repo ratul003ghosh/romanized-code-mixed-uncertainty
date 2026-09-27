@@ -22,14 +22,19 @@ What passing looks like:
 - `sanity ... 'passed': True` in the log (the same teacher scored twice gives E = 0)
 - `experiments/teacher/smoke/report.md` exists with 5 inputs
 
-## 2. Full run (after we send `data/processed/teacher_inputs.jsonl`)
+## 2. Full run (one run per split, after we send the input files)
 ```bash
 export HF_TOKEN=...    # gemma-2-9b-it and Llama-3.1-8B are gated: accept their licences on Hugging Face first
-python scripts/run_teacher.py --config configs/teacher_full.yaml
+for SPLIT in train dev test; do
+  python scripts/run_teacher.py --config configs/teacher_full.yaml \
+    --input data/processed/teacher_inputs_banglatlit_${SPLIT}.jsonl \
+    --output-dir experiments/teacher/${SPLIT}
+done
 ```
+Each split gets its own folder, so dev/test teacher outputs can never be mixed into training data.
 - Resumable: rerunning skips finished (input, teacher) pairs.
 - Stages can be run separately: `--stage generate | pivot | score | spans`.
-- Send back the whole `experiments/teacher/full/` folder (zip it). Do not upload it anywhere public.
+- Send back the `experiments/teacher/train`, `dev` and `test` folders (zip them). Do not upload it anywhere public.
 
 ## Troubleshooting
 - Out of memory: set `load_in_4bit: true` in the config (needs bitsandbytes), or lower `generation.batch_size`.

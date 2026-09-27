@@ -7,7 +7,8 @@ import json
 import re
 
 UNC_TYPES = ["TRANSLITERATION", "NUMERIC_AMBIGUITY", "PII_BOUNDARY", "DIALECT_MEANING", "INTENT"]
-PII_TYPES = ["PHONE", "NID", "TXN_ID", "ACCOUNT", "CARD", "OTP", "EMAIL", "NAME", "ADDRESS", "ID"]
+PII_TYPES = ["PHONE", "NID", "ID_NUMBER", "TXN_ID", "ACCOUNT", "CARD", "OTP", "EMAIL", "NAME", "ADDRESS"]
+PLACEHOLDER_RE = re.compile(r"<([A-Z_]+)_([1-9][0-9]*)>")
 TOP_KEYS = ["sanitized_prompt", "pii", "preserved_entities", "ambiguous_spans"]
 
 
@@ -76,6 +77,11 @@ def validate(obj):
         t, s, ph = _str(d.get("type")), _str(d.get("span")), _str(d.get("placeholder"))
         if t and s and ph:
             out["pii"].append({"type": t.upper(), "span": s, "placeholder": ph})
+            m = PLACEHOLDER_RE.fullmatch(ph)
+            if t.upper() not in PII_TYPES:
+                errors.append(f"unknown pii type {t}")
+            elif not m or m.group(1) != t.upper():
+                errors.append(f"placeholder {ph} does not follow <{t.upper()}_N>")
         else:
             errors.append(f"bad pii entry: {e!r}"[:120])
 
