@@ -5,3 +5,5 @@ datasets
 pandas
 numpy
 scikit-learn
+pytest
+openpyxl
