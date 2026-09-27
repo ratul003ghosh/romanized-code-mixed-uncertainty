@@ -348,7 +348,7 @@ def evaluate_channel_separation(
                     matched_unc = p
                     break
 
-            e_score = float(matched_unc.get("epistemic", 0.0)) if matched_unc else (0.5 if has_error else 0.0)
+            e_score = float(matched_unc.get("epistemic", 0.0)) if matched_unc else 0.0
             a_score = float(matched_unc.get("aleatoric", 0.0)) if matched_unc else 0.0
 
             epistemic_labels.append(e_label)

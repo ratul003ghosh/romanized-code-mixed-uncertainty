@@ -230,6 +230,34 @@ class TestEvaluationMetrics(unittest.TestCase):
         self.assertGreater(res["channel_separation_index"], 0.0)
         self.assertTrue(res["is_separated"])
 
+    def test_channel_separation_no_uncertainties_regression(self):
+        """Regression test: when prediction has no uncertainty output, epistemic AUROC should be 0.5 (not 1.0)."""
+        from evaluation.uncertainty_metrics import evaluate_channel_separation
+        gold = [
+            {
+                "id": "BG_REG_1",
+                "pii": [
+                    {"type": "PHONE", "text": "01711111111", "start": 0, "end": 11},
+                    {"type": "TXN_ID", "text": "TX9988", "start": 20, "end": 26}
+                ],
+                "uncertainties": []
+            }
+        ]
+        # Prediction with NO uncertainty outputs and 1 of 2 PII missing
+        pred_no_unc = [
+            {
+                "id": "BG_REG_1",
+                "pii": [
+                    {"type": "PHONE", "text": "01711111111", "start": 0, "end": 11}
+                ],
+                "uncertainties": []
+            }
+        ]
+        res = evaluate_channel_separation(gold, pred_no_unc)
+        epi_ch = res["epistemic_channel"]
+        # Without predicted uncertainties, scores are all 0.0, so AUROC must be 0.5 (random / uninformative)
+        self.assertEqual(epi_ch["auroc_epistemic_on_errors"], 0.5)
+
 
 if __name__ == "__main__":
     unittest.main()
