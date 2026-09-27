@@ -1,16 +1,14 @@
-import argparse
-import json
+"""Teacher ensemble + two-channel uncertainty.
 
-def run_teacher(args):
-    print(f"Loading teacher model: {args.model}")
-    print(f"Processing {args.samples} samples...")
-    # PROTOTYPE: Add logic here to load model, process samples, extract logits
-    print("Outputs saved to:", args.output_path)
+    python scripts/run_teacher.py --config configs/teacher_smoke.yaml
+    python scripts/run_teacher.py --config configs/teacher_full.yaml [--stage generate|pivot|score|spans]
+"""
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from src.teachers.run import main  # noqa: E402
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, default="Qwen/Qwen1.5-7B")
-    parser.add_argument("--samples", type=int, default=5)
-    parser.add_argument("--output-path", type=str, default="results/teacher/")
-    args = parser.parse_args()
-    run_teacher(args)
+    main()

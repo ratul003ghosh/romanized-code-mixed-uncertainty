@@ -1,0 +1,36 @@
+# GPU smoke test: 5 synthetic inputs, same-tokenizer group only. ~10-15 min incl. download.
+run_name: smoke
+input_file: data/synthetic/teacher_smoke.jsonl
+output_dir: experiments/teacher/smoke
+limit: 5
+
+same_tokenizer:
+  model: Qwen/Qwen2.5-7B-Instruct
+  dtype: bfloat16          # ~15 GB of weights; fits a 32 GB GPU
+  load_in_4bit: false      # set true only if the GPU has < 20 GB
+  variants: [balanced, dialect, finance_pii, transliteration]   # K = 4 teachers
+  # adapters:              # later: LoRA teachers of §4.1 (one per variant)
+  #   balanced: path/to/lora_balanced
+
+heterogeneous: []          # field-level teachers; see configs/teacher_full.yaml
+
+generation:
+  max_new_tokens: 512
+  batch_size: 4
+
+pivot:
+  strategy: best_teacher   # best_teacher | medoid
+  best_teacher: same:balanced
+
+scoring:
+  tau: 1.0                 # temperature of entropy weights, Eq. 6 (KD target only)
+  kd_top_k: 10             # top-k of the KD target stored per token
+  alt_k: 3                 # readable alternative tokens per position
+  max_pivot_tokens: 768
+  sanity_check: true       # identical teachers must give E = 0
+
+spans:
+  flag_quantile: 0.8       # PROTOTYPE flagging until logistic heads are fitted on gold dev
+  word_flag_quantile: 0.95
+  min_raw_nats: 0.05
+  dialect_lexicon: null    # path to one-word-per-line lexicon (from 5-Dialects-BN / BIDWESH)
