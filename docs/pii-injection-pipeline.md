@@ -1,6 +1,6 @@
 # PII injection and preprocessing pipeline
 
-**Owner:** Himel Saha (data lead) · **Proposal v2:** §3.1–3.4, §2.1, §4.6 rule 1, §6.1 · **Status:** silver inputs v0 done
+**Owner:** Himel Saha (Pii+preprocssing) · **Proposal v2:** §3.1–3.4, §2.1, §4.6 rule 1, §6.1 · **Status:** silver inputs v0 done
 
 This pipeline turns raw corpora into **silver inputs**: prompts with synthetic PII at exact
 character offsets, which the teacher ensemble will label (§3.2 step 5). It also sets aside the
