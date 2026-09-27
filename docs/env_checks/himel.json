@@ -1,0 +1,43 @@
+{
+  "member": "himel",
+  "date": "2026-09-27T04:58:26+00:00",
+  "commit": "d7ddbf13f1f42c6867042e9e740611c1edda585f",
+  "shard": null,
+  "seed": 0,
+  "gpus": [
+    "Tesla T4",
+    "Tesla T4"
+  ],
+  "python": "3.12.13",
+  "torch": "2.13.0+cu130",
+  "vllm": "0.30.0",
+  "vllm_pip_spec": "vllm",
+  "decoding_api": "structured_outputs",
+  "decoding_schema_stripped_keys": [
+    "uniqueItems"
+  ],
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "schema_file": "configs/schema.json",
+  "n_inputs": 3,
+  "n_schema_valid": 3,
+  "results": [
+    {
+      "input": "ami kal 01712345678 e 500 tk bkash korbo, TrxID ta bhule gechi",
+      "parses": true,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "input": "amar NID 1234567890, account e taka ashe nai keno?",
+      "parses": true,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "input": "bhai 5oo taka recharge dilam kintu ashe nai, ki korbo",
+      "parses": true,
+      "valid": true,
+      "errors": []
+    }
+  ]
+}
