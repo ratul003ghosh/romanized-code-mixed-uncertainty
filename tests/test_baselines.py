@@ -63,6 +63,55 @@ class TestRegexBaseline(unittest.TestCase):
         self.assertEqual(pred["routing"], "PROCEED_WITH_FLAGS")
 
 
+class TestTransliterationBaseline(unittest.TestCase):
+
+    def setUp(self):
+        from src.baselines.translit_baseline import TransliterationPIIBaseline, BanglishPhoneticTransliterator
+        self.transliterator = BanglishPhoneticTransliterator()
+        self.baseline = TransliterationPIIBaseline()
+
+    def test_phonetic_transliteration(self):
+        t1 = self.transliterator.transliterate("amar bkash taka")
+        self.assertTrue(len(t1) > 0)
+        # Verify numbers/punctuation preserved
+        t2 = self.transliterator.transliterate("500 tk 01712345678")
+        self.assertIn("500", t2)
+        self.assertIn("01712345678", t2)
+
+    def test_transliteration_record_prediction(self):
+        rec = {
+            "id": "BG_TR_1",
+            "clean_input": "vai amar bkash account 01899887766 te send koren",
+            "metadata": {"language": "banglish"}
+        }
+        pred = self.baseline.predict_record(rec)
+        self.assertEqual(pred["id"], "BG_TR_1")
+        self.assertEqual(pred["schema_version"], "0.2")
+        self.assertIsNotNone(pred["normalized_text"])
+        self.assertIn("<PHONE_1>", pred["sanitized_prompt"])
+        self.assertNotIn("01899887766", pred["sanitized_prompt"])
+
+
+class TestStudentConfidenceBaseline(unittest.TestCase):
+
+    def setUp(self):
+        from src.baselines.student_confidence import StudentConfidenceBaseline
+        self.baseline = StudentConfidenceBaseline()
+
+    def test_single_channel_confidence(self):
+        rec = {
+            "id": "BG_SC_1",
+            "clean_input": "01712345678 e bkash koren",
+            "metadata": {"language": "banglish"}
+        }
+        pred = self.baseline.predict_record(rec)
+        self.assertEqual(len(pred["uncertainties"]), 1)
+        unc = pred["uncertainties"][0]
+        # In single confidence baseline, aleatoric == epistemic == (1 - conf)
+        self.assertEqual(unc["aleatoric"], unc["epistemic"])
+        self.assertAlmostEqual(unc["aleatoric"] + unc["confidence"], 1.0)
+
+
 if __name__ == "__main__":
     unittest.main()
 
