@@ -58,7 +58,10 @@ def make_target(r):
     """Keep only what the student should output (proposal Section 2)."""
     return {
         "sanitized_prompt": r["sanitized_prompt"],
-        "pii": [{"type": p["type"], "placeholder": p["placeholder"]} for p in r["pii"]],
+        # "span" is the PII text as written in the input, as in the teachers' own JSON; it lets
+        # infer_student.py locate predicted PII in clean_input for span metrics. This list stays
+        # on the device; only sanitized_prompt leaves it.
+        "pii": [{"type": p["type"], "placeholder": p["placeholder"], "span": p.get("text")} for p in r["pii"]],
         "preserved_entities": r["preserved_entities"],
         "uncertainties": [
             {"span": u["span"], "types": u["types"], "candidates": u.get("candidates", []),
@@ -83,6 +86,8 @@ def main(in_path, out_path):
                 continue
             example = {
                 "id": r["id"],
+                "metadata": {"label_source": "silver", "split": "train",
+                             "source": r["metadata"].get("source")},
                 "messages": [
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": r["clean_input"]},

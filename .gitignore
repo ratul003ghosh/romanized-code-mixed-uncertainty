@@ -18,3 +18,6 @@ venv/
 data/processed/*.jsonl
 banglatlit_output.txt
 data/synthetic/silver_fixture.jsonl
+# student checkpoints and predictions (never commit model weights)
+experiments/student/
+*.safetensors
