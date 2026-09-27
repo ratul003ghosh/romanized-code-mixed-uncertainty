@@ -1,6 +1,7 @@
 """GPU smoke test for the teacher ensemble (issue #7). Run from the repo root:
 
-    python scripts/test_gpu.py
+    python scripts/test_gpu.py                      # picks the config for this GPU
+    python scripts/test_gpu.py configs/teacher_smoke_small_gpu.yaml   # or force one
 
 Steps: environment report -> CPU unit/tiny end-to-end tests -> teacher/student tokenizer
 check -> 5 synthetic inputs x 4 teachers on Qwen2.5-7B -> experiments/teacher/smoke_results.tar.gz
@@ -37,7 +38,21 @@ step("environment", [py, "-c",
      "print('gpu mem GB', round(torch.cuda.get_device_properties(0).total_memory/1e9,1) if torch.cuda.is_available() else 0)"])
 step("unit + tiny end-to-end tests", [py, "-m", "pytest", "-q", "tests/test_teacher_core.py", "tests/test_teacher_pipeline.py"])
 step("tokenizer check teacher vs student (proposal 4.1)", [py, "scripts/vocab_check.py"], required=False)
-step("smoke run: 5 inputs x 4 teachers", [py, "scripts/run_teacher.py", "--config", "configs/teacher_smoke.yaml"])
+
+def pick_config():
+    """Full-precision config on big GPUs; 4-bit float16 config on GPUs < 20 GB or without bfloat16 (T4)."""
+    import torch
+    if not torch.cuda.is_available():
+        return "configs/teacher_smoke.yaml"
+    mem_gb = torch.cuda.get_device_properties(0).total_memory / 1e9
+    small = mem_gb < 20 or not torch.cuda.is_bf16_supported()
+    return "configs/teacher_smoke_small_gpu.yaml" if small else "configs/teacher_smoke.yaml"
+
+
+config = sys.argv[1] if len(sys.argv) > 1 else pick_config()
+print(f"\nusing config: {config}", flush=True)
+log.write(f"\nusing config: {config}\n")
+step("smoke run: 5 inputs x 4 teachers", [py, "scripts/run_teacher.py", "--config", config])
 log.close()
 
 tar_path = "experiments/teacher/smoke_results.tar.gz"
