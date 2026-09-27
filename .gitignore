@@ -16,3 +16,5 @@ models/
 *.pth
 venv/
 data/processed/*.jsonl
+banglatlit_output.txt
+data/synthetic/silver_fixture.jsonl

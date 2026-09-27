@@ -1,0 +1,436 @@
+[
+  {
+    "id": "EX_CLEAN_001",
+    "category": "CLEAN_CONTROL",
+    "input": "ami bari jabo",
+    "normalized": "I will go home.",
+    "pii_spans": [],
+    "uncertainty_spans": [],
+    "expected_routing": "PROCEED",
+    "notes": "Simple control example with no intended ambiguity or PII. Synthetic development example only."
+  },
+  {
+    "id": "EX_CLEAN_002",
+    "category": "CLEAN_CONTROL",
+    "input": "ajke meeting ache",
+    "normalized": "There is a meeting today.",
+    "pii_spans": [],
+    "uncertainty_spans": [],
+    "expected_routing": "PROCEED",
+    "notes": "Simple control example. Synthetic development example only."
+  },
+  {
+    "id": "EX_CLEAN_003",
+    "category": "CLEAN_CONTROL",
+    "input": "amar laptop ta check koren",
+    "normalized": "Please check my laptop.",
+    "pii_spans": [],
+    "uncertainty_spans": [],
+    "expected_routing": "PROCEED",
+    "notes": "Control example. Synthetic development example only."
+  },
+  {
+    "id": "EX_NUM_001",
+    "category": "NUMERIC_AMBIGUITY",
+    "input": "ami 5oo tk send korsi",
+    "normalized": "I sent <AMBIGUOUS_AMOUNT> BDT.",
+    "pii_spans": [],
+    "uncertainty_spans": [
+      {
+        "span": "5oo tk",
+        "type": "NUMERIC_AMBIGUITY",
+        "candidates": [
+          "500 BDT",
+          "5000 BDT"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER",
+    "notes": "Controlled ambiguity. Do not treat HIGH/LOW as measured scores."
+  },
+  {
+    "id": "EX_NUM_002",
+    "category": "NUMERIC_AMBIGUITY",
+    "input": "5oo taka pathaiyen",
+    "normalized": "Please send <AMBIGUOUS_AMOUNT> BDT.",
+    "pii_spans": [],
+    "uncertainty_spans": [
+      {
+        "span": "5oo taka",
+        "type": "NUMERIC_AMBIGUITY",
+        "candidates": [
+          "500 BDT",
+          "5000 BDT"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER",
+    "notes": "Controlled numeric ambiguity."
+  },
+  {
+    "id": "EX_NUM_003",
+    "category": "NUMERIC_AMBIGUITY",
+    "input": "amar bill 2oo tk",
+    "normalized": "My bill is <AMBIGUOUS_AMOUNT> BDT.",
+    "pii_spans": [],
+    "uncertainty_spans": [
+      {
+        "span": "2oo tk",
+        "type": "NUMERIC_AMBIGUITY",
+        "candidates": [
+          "200 BDT",
+          "2000 BDT"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER",
+    "notes": "Controlled numeric ambiguity."
+  },
+  {
+    "id": "EX_TRANS_001",
+    "category": "TRANSLITERATION_AMBIGUITY",
+    "input": "kal jabo",
+    "normalized": "<AMBIGUOUS_TIME_REFERENCE> jabo.",
+    "pii_spans": [],
+    "uncertainty_spans": [
+      {
+        "span": "kal",
+        "type": "TRANSLITERATION",
+        "candidates": [
+          "yesterday",
+          "tomorrow"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER",
+    "notes": "The Romanized form 'kal' can require context. Controlled example."
+  },
+  {
+    "id": "EX_TRANS_002",
+    "category": "TRANSLITERATION_AMBIGUITY",
+    "input": "kal aschilam",
+    "normalized": "<AMBIGUOUS_TIME_REFERENCE> I came.",
+    "pii_spans": [],
+    "uncertainty_spans": [
+      {
+        "span": "kal",
+        "type": "TRANSLITERATION",
+        "candidates": [
+          "yesterday",
+          "tomorrow"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER",
+    "notes": "Controlled example. Exact intended meaning should not be invented."
+  },
+  {
+    "id": "EX_TRANS_003",
+    "category": "TRANSLITERATION_AMBIGUITY",
+    "input": "ami kal call dibo",
+    "normalized": "I will call <AMBIGUOUS_TIME_REFERENCE>.",
+    "pii_spans": [],
+    "uncertainty_spans": [
+      {
+        "span": "kal",
+        "type": "TRANSLITERATION",
+        "candidates": [
+          "yesterday",
+          "tomorrow"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER",
+    "notes": "Controlled transliteration ambiguity."
+  },
+  {
+    "id": "EX_DIALECT_001",
+    "category": "DIALECT_MEANING",
+    "input": "<CONFIRMED_DIALECT_TERM> ta ki mane?",
+    "normalized": "<PENDING_DIALECT_NORMALIZATION>",
+    "pii_spans": [],
+    "uncertainty_spans": [
+      {
+        "span": "<CONFIRMED_DIALECT_TERM>",
+        "type": "DIALECT_MEANING",
+        "candidates": [
+          "<PENDING_VERIFIED_MEANING>"
+        ],
+        "expected_signal": {
+          "aleatoric": "PENDING",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER",
+    "notes": "Placeholder intentionally used. Replace only with a dialect term whose meaning is verified from an approved source/annotation."
+  },
+  {
+    "id": "EX_DIALECT_002",
+    "category": "DIALECT_MEANING",
+    "input": "local dialect er <CONFIRMED_DIALECT_TERM> bujhte parchi na",
+    "normalized": "I cannot understand the local dialect term.",
+    "pii_spans": [],
+    "uncertainty_spans": [
+      {
+        "span": "<CONFIRMED_DIALECT_TERM>",
+        "type": "DIALECT_MEANING",
+        "candidates": [
+          "<PENDING_VERIFIED_MEANING>"
+        ],
+        "expected_signal": {
+          "aleatoric": "PENDING",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER",
+    "notes": "Placeholder until a verified dialect example is selected."
+  },
+  {
+    "id": "EX_PII_001",
+    "category": "PII_PHONE",
+    "input": "amar number 01712345678",
+    "normalized": "My number <PHONE_1>.",
+    "pii_spans": [
+      {
+        "span": "01712345678",
+        "type": "PHONE",
+        "mask": "<PHONE_1>"
+      }
+    ],
+    "uncertainty_spans": [],
+    "expected_routing": "PROCEED_WITH_FLAGS",
+    "notes": "Synthetic PII value for development only."
+  },
+  {
+    "id": "EX_PII_002",
+    "category": "PII_TRANSACTION_ID",
+    "input": "trans id 9X87K check koren",
+    "normalized": "Please check transaction ID <TXN_ID_1>.",
+    "pii_spans": [
+      {
+        "span": "9X87K",
+        "type": "TXN_ID",
+        "mask": "<TXN_ID_1>"
+      }
+    ],
+    "uncertainty_spans": [],
+    "expected_routing": "PROCEED_WITH_FLAGS",
+    "notes": "Synthetic transaction identifier for development only."
+  },
+  {
+    "id": "EX_PII_003",
+    "category": "PII_ID_BOUNDARY",
+    "input": "1987654321 eta check koren",
+    "normalized": "<IDENTIFIER_1> check koren.",
+    "pii_spans": [
+      {
+        "span": "1987654321",
+        "type": "IDENTIFIER",
+        "mask": "<ID_1>"
+      }
+    ],
+    "uncertainty_spans": [
+      {
+        "span": "1987654321",
+        "type": "PII_BOUNDARY",
+        "candidates": [
+          "NID",
+          "account number",
+          "other identifier"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ESCALATE",
+    "notes": "The exact PII subtype is intentionally uncertain; masking is safer than exposing it."
+  },
+  {
+    "id": "EX_COMBO_001",
+    "category": "COMBINED",
+    "input": "kalk3 bkash e 5oo tk send korsi trans id 9X87K",
+    "normalized": "I sent <AMBIGUOUS_AMOUNT> BDT via bKash; transaction ID <TXN_ID_1>.",
+    "pii_spans": [
+      {
+        "span": "9X87K",
+        "type": "TXN_ID",
+        "mask": "<TXN_ID_1>"
+      }
+    ],
+    "uncertainty_spans": [
+      {
+        "span": "5oo tk",
+        "type": "NUMERIC_AMBIGUITY",
+        "candidates": [
+          "500 BDT",
+          "5000 BDT"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER",
+    "notes": "Combined development example based on the proposal's style of example. No measured uncertainty score is claimed."
+  },
+  {
+    "id": "EX_COMBO_002",
+    "category": "COMBINED",
+    "input": "kal bkash e 5oo tk pathabo, amar number 01712345678",
+    "normalized": "<AMBIGUOUS_TIME_REFERENCE> I will send <AMBIGUOUS_AMOUNT> BDT via bKash; my number is <PHONE_1>.",
+    "pii_spans": [
+      {
+        "span": "01712345678",
+        "type": "PHONE",
+        "mask": "<PHONE_1>"
+      }
+    ],
+    "uncertainty_spans": [
+      {
+        "span": "kal",
+        "type": "TRANSLITERATION",
+        "candidates": [
+          "yesterday",
+          "tomorrow"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      },
+      {
+        "span": "5oo tk",
+        "type": "NUMERIC_AMBIGUITY",
+        "candidates": [
+          "500 BDT",
+          "5000 BDT"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER",
+    "notes": "Combined development example."
+  },
+  {
+    "id": "EX_COMBO_003",
+    "category": "COMBINED_PII_BOUNDARY",
+    "input": "bkash e 5oo tk pathaisi, id 1987654321 check koren",
+    "normalized": "I sent <AMBIGUOUS_AMOUNT> BDT via bKash; please check <ID_1>.",
+    "pii_spans": [
+      {
+        "span": "1987654321",
+        "type": "IDENTIFIER",
+        "mask": "<ID_1>"
+      }
+    ],
+    "uncertainty_spans": [
+      {
+        "span": "5oo tk",
+        "type": "NUMERIC_AMBIGUITY",
+        "candidates": [
+          "500 BDT",
+          "5000 BDT"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      },
+      {
+        "span": "1987654321",
+        "type": "PII_BOUNDARY",
+        "candidates": [
+          "NID",
+          "account number",
+          "other identifier"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ESCALATE",
+    "notes": "Combined PII + ambiguity case. Routing is a prototype expectation, not a measured result."
+  },
+  {
+    "id": "EX_INTENT_001",
+    "category": "INTENT_AMBIGUITY",
+    "input": "bkash er taka niye ki korbo?",
+    "normalized": "What should I do about the bKash money?",
+    "pii_spans": [],
+    "uncertainty_spans": [
+      {
+        "span": "ki korbo",
+        "type": "INTENT",
+        "candidates": [
+          "send the money",
+          "check a transaction",
+          "report a problem"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER",
+    "notes": "Controlled intent ambiguity. Candidate intents are illustrative development labels, not human-annotated gold labels."
+  },
+  {
+    "id": "EX_INTENT_002",
+    "category": "INTENT_AMBIGUITY",
+    "input": "ei transaction ta dekhen",
+    "normalized": "Please look at this transaction.",
+    "pii_spans": [],
+    "uncertainty_spans": [
+      {
+        "span": "dekhen",
+        "type": "INTENT",
+        "candidates": [
+          "check transaction status",
+          "verify recipient",
+          "investigate failed payment"
+        ],
+        "expected_signal": {
+          "aleatoric": "HIGH",
+          "epistemic": "PENDING_MEASUREMENT"
+        }
+      }
+    ],
+    "expected_routing": "ASK_USER",
+    "notes": "Controlled intent ambiguity."
+  }
+]
