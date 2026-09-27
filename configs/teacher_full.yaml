@@ -1,0 +1,38 @@
+# Full teacher run: all inputs, same-tokenizer group + heterogeneous teachers.
+run_name: full
+input_file: data/processed/teacher_inputs.jsonl   # from the dataset pipeline (Saber), {id, text} per line
+output_dir: experiments/teacher/full
+limit: null
+
+same_tokenizer:
+  model: Qwen/Qwen2.5-7B-Instruct
+  dtype: bfloat16          # ~15 GB of weights; fits a 32 GB GPU
+  load_in_4bit: false      # set true only if the GPU has < 20 GB
+  variants: [balanced, dialect, finance_pii, transliteration]   # K = 4 teachers
+  # adapters:              # later: LoRA teachers of §4.1 (one per variant)
+  #   balanced: path/to/lora_balanced
+
+heterogeneous:             # gated on HF: accept the licence, then export HF_TOKEN
+  - {alias: gemma2_9b, model: google/gemma-2-9b-it}
+  - {alias: llama31_8b, model: meta-llama/Llama-3.1-8B-Instruct}
+
+generation:
+  max_new_tokens: 512
+  batch_size: 8
+
+pivot:
+  strategy: best_teacher   # best_teacher | medoid
+  best_teacher: same:balanced
+
+scoring:
+  tau: 1.0                 # temperature of entropy weights, Eq. 6 (KD target only)
+  kd_top_k: 10             # top-k of the KD target stored per token
+  alt_k: 3                 # readable alternative tokens per position
+  max_pivot_tokens: 768
+  sanity_check: true       # identical teachers must give E = 0
+
+spans:
+  flag_quantile: 0.8       # PROTOTYPE flagging until logistic heads are fitted on gold dev
+  word_flag_quantile: 0.95
+  min_raw_nats: 0.05
+  dialect_lexicon: null    # path to one-word-per-line lexicon (from 5-Dialects-BN / BIDWESH)
