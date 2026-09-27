@@ -81,7 +81,7 @@
   "uncertainty_calibration": {
     "sample_count": 2,
     "positive_ambiguous_count": 1,
-    "ambiguity_auroc": 1.0,
+    "ambiguity_auroc": 0.5,
     "ambiguity_ece": 0.5,
     "ambiguity_brier_score": 0.5,
     "calibration_bins": [
@@ -196,6 +196,22 @@
         "error": 0.0
       }
     ]
+  },
+  "channel_separation": {
+    "aleatoric_channel": {
+      "auroc_aleatoric_on_ambiguity": 0.5,
+      "auroc_epistemic_cross": 0.5,
+      "cross_channel_gap": 0.0,
+      "sample_count": 2
+    },
+    "epistemic_channel": {
+      "auroc_epistemic_on_errors": NaN,
+      "auroc_aleatoric_cross": NaN,
+      "cross_channel_gap": null,
+      "sample_count": 5
+    },
+    "channel_separation_index": 0.0,
+    "is_separated": false
   },
   "routing_decision": {
     "total_evaluated": 4,

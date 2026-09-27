@@ -179,6 +179,56 @@ class TestEvaluationMetrics(unittest.TestCase):
         self.assertIn("PII Span (Exact)", report)
         self.assertIn("Ambiguity AUROC", report)
         self.assertIn("Routing Accuracy", report)
+        self.assertIn("Channel Separation", report)
+
+    def test_channel_separation(self):
+        from evaluation.uncertainty_metrics import evaluate_channel_separation
+        gold = [
+            {
+                "id": "BG_SEP_1",
+                "pii": [
+                    {"type": "PHONE", "text": "01711111111", "start": 0, "end": 11},
+                    {"type": "TXN_ID", "text": "TX9988", "start": 20, "end": 26}
+                ],
+                "uncertainties": [
+                    {"span": "5oo tk", "start": 30, "end": 36, "human_ambiguous": True},
+                    {"span": "bkash", "start": 40, "end": 45, "human_ambiguous": False}
+                ]
+            }
+        ]
+        # Prediction:
+        # - High aleatoric (0.9) on human-ambiguous "5oo tk", low aleatoric (0.1) on "bkash"
+        # - Model got PHONE right (low epistemic 0.05), but got TXN_ID wrong (missed it, high epistemic 0.85)
+        pred = [
+            {
+                "id": "BG_SEP_1",
+                "pii": [
+                    {"type": "PHONE", "text": "01711111111", "start": 0, "end": 11}
+                    # TX9988 was missed by model -> epistemic error!
+                ],
+                "uncertainties": [
+                    {"span": "5oo tk", "start": 30, "end": 36, "aleatoric": 0.90, "epistemic": 0.10},
+                    {"span": "bkash", "start": 40, "end": 45, "aleatoric": 0.10, "epistemic": 0.10},
+                    {"span": "01711111111", "start": 0, "end": 11, "aleatoric": 0.05, "epistemic": 0.05},
+                    {"span": "TX9988", "start": 20, "end": 26, "aleatoric": 0.05, "epistemic": 0.85}
+                ]
+            }
+        ]
+        res = evaluate_channel_separation(gold, pred)
+        ale_ch = res["aleatoric_channel"]
+        epi_ch = res["epistemic_channel"]
+
+        # Aleatoric channel: Aleatoric score should separate human ambiguity better than Epistemic score
+        self.assertEqual(ale_ch["auroc_aleatoric_on_ambiguity"], 1.0)
+        self.assertGreater(ale_ch["cross_channel_gap"], 0.0)
+
+        # Epistemic channel: Epistemic score should separate prediction errors better than Aleatoric score
+        self.assertEqual(epi_ch["auroc_epistemic_on_errors"], 1.0)
+        self.assertGreater(epi_ch["cross_channel_gap"], 0.0)
+
+        # Overall channel separation index should be positive
+        self.assertGreater(res["channel_separation_index"], 0.0)
+        self.assertTrue(res["is_separated"])
 
 
 if __name__ == "__main__":

@@ -12,7 +12,10 @@ from evaluation.pii_metrics import (
     compute_pii_leakage,
     compute_overmasking_rate
 )
-from evaluation.uncertainty_metrics import evaluate_span_uncertainty
+from evaluation.uncertainty_metrics import (
+    evaluate_span_uncertainty,
+    evaluate_channel_separation
+)
 from evaluation.routing_metrics import (
     evaluate_routing_decisions,
     compute_risk_coverage
@@ -43,6 +46,7 @@ class MasterEvaluator:
             "pii_leakage": compute_pii_leakage(gold_records, pred_records),
             "overmasking_utility": compute_overmasking_rate(gold_records, pred_records),
             "uncertainty_calibration": evaluate_span_uncertainty(gold_records, pred_records),
+            "channel_separation": evaluate_channel_separation(gold_records, pred_records, self.iou_threshold),
             "routing_decision": evaluate_routing_decisions(gold_records, pred_records),
             "risk_coverage": compute_risk_coverage(gold_records, pred_records),
             "text_normalization": evaluate_text_normalization(gold_records, pred_records)
@@ -59,6 +63,7 @@ class MasterEvaluator:
         leak = eval_results.get("pii_leakage", {})
         util = eval_results.get("overmasking_utility", {})
         unc = eval_results.get("uncertainty_calibration", {})
+        cs = eval_results.get("channel_separation", {})
         rout = eval_results.get("routing_decision", {})
         rc = eval_results.get("risk_coverage", {})
         txt = eval_results.get("text_normalization", {})
@@ -90,6 +95,33 @@ class MasterEvaluator:
         report.append(f"| **Ambiguity AUROC** | {auroc_str} | Discriminating human ambiguous spans |")
         report.append(f"| **Expected Calibration Error (ECE)** | {ece_str} | Calibration gap across confidence bins |")
         report.append(f"| **Brier Score** | {brier_str} | Mean squared uncertainty error |\n")
+
+        # Channel Separation table (RQ1 / K5, Proposal §3.3)
+        if cs:
+            ale_ch = cs.get("aleatoric_channel", {})
+            epi_ch = cs.get("epistemic_channel", {})
+            csi = cs.get("channel_separation_index")
+            csi_str = f"{csi:.4f}" if isinstance(csi, (float, int)) else "N/A"
+            a_gap = ale_ch.get("cross_channel_gap")
+            a_gap_str = f"{a_gap:.4f}" if isinstance(a_gap, (float, int)) else "N/A"
+            e_gap = epi_ch.get("cross_channel_gap")
+            e_gap_str = f"{e_gap:.4f}" if isinstance(e_gap, (float, int)) else "N/A"
+
+            report.append("## 2.1 Channel Separation (RQ1 / K5, Proposal Section 3.3)")
+            report.append("| Channel Metric | Primary AUROC | Cross-Channel AUROC | Gap (Primary - Cross) |")
+            report.append("|---|---|---|---|")
+            a_pri = ale_ch.get("auroc_aleatoric_on_ambiguity")
+            a_cross = ale_ch.get("auroc_epistemic_cross")
+            a_pri_str = f"{a_pri:.4f}" if isinstance(a_pri, (float, int)) else "N/A"
+            a_cross_str = f"{a_cross:.4f}" if isinstance(a_cross, (float, int)) else "N/A"
+            report.append(f"| **Aleatoric Channel (Human Ambiguity)** | {a_pri_str} | {a_cross_str} | **{a_gap_str}** |")
+
+            e_pri = epi_ch.get("auroc_epistemic_on_errors")
+            e_cross = epi_ch.get("auroc_aleatoric_cross")
+            e_pri_str = f"{e_pri:.4f}" if isinstance(e_pri, (float, int)) else "N/A"
+            e_cross_str = f"{e_cross:.4f}" if isinstance(e_cross, (float, int)) else "N/A"
+            report.append(f"| **Epistemic Channel (Model Disagreement/Error)** | {e_pri_str} | {e_cross_str} | **{e_gap_str}** |")
+            report.append(f"- **Channel Separation Index (CSI)**: **{csi_str}** (Higher gap confirms decoupled channels)\n")
 
         report.append("## 3. Dynamic Routing & Risk Control (RQ3)")
         acc = rout.get("accuracy")

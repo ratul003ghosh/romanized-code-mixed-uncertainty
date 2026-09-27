@@ -15,9 +15,16 @@
 ## 2. Uncertainty & Calibration (RQ1 / RQ2)
 | Metric | Value | Meaning |
 |---|---|---|
-| **Ambiguity AUROC** | 1.0000 | Discriminating human ambiguous spans |
+| **Ambiguity AUROC** | 0.5000 | Discriminating human ambiguous spans |
 | **Expected Calibration Error (ECE)** | 0.5000 | Calibration gap across confidence bins |
 | **Brier Score** | 0.5000 | Mean squared uncertainty error |
+
+## 2.1 Channel Separation (RQ1 / K5, Proposal Section 3.3)
+| Channel Metric | Primary AUROC | Cross-Channel AUROC | Gap (Primary - Cross) |
+|---|---|---|---|
+| **Aleatoric Channel (Human Ambiguity)** | 0.5000 | 0.5000 | **0.0000** |
+| **Epistemic Channel (Model Disagreement/Error)** | nan | nan | **N/A** |
+- **Channel Separation Index (CSI)**: **0.0000** (Higher gap confirms decoupled channels)
 
 ## 3. Dynamic Routing & Risk Control (RQ3)
 | Metric | Value | Meaning |

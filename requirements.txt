@@ -5,3 +5,4 @@ datasets
 pandas
 numpy
 scikit-learn
+pytest
