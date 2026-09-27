@@ -23,8 +23,16 @@ Decomposition in nats with uniform weights: `H(p_bar) = A + E`, `A = mean_k H(p_
 Entropy weights (Eq. 6) are used only for the KD target stored in `token_scores.jsonl`.
 
 ## Interfaces
-- Input (from dataset pipeline): JSONL, one `{"id": ..., "text": ...}` per line; extra keys are carried along.
-- Student / silver (Saber): `silver.jsonl` with `input` and `target` in the proposal §2 schema;
+- Input (from dataset pipeline): JSONL, `{"id", "text", "split", "source"}` per line (Saber's export) or full
+  schema v0.2 records (`clean_input` is used). Run each split into its own folder:
+  `python scripts/run_teacher.py --config configs/teacher_full.yaml --input data/processed/teacher_inputs_banglatlit_train.jsonl --output-dir experiments/teacher/train`
+- Student / silver (Saber): `silver.jsonl` is team schema v0.2 (`docs/annotation-schema.md`), one flat record
+  per input: `clean_input`, `sanitized_prompt`, `pii` (with `start`/`end` in `clean_input`), `preserved_entities`,
+  `uncertainties` (flagged spans with `aleatoric`/`epistemic`, `human_ambiguous: null`), `routing: null`,
+  `metadata.label_source: "silver"`, `metadata.split` copied from the input. It goes straight into
+  `scripts/build_student_data.py`, which keeps only split `train`.
+  Spans the teacher wrote that are not found verbatim in `clean_input` get `start`/`end = null`
+  (count in `metadata.unlocated_spans`). Output-side word scores stay in `spans.jsonl` only.
   `token_scores.jsonl` has `kd_top_ids` / `kd_top_probs` per pivot token for masked KD.
 - Evaluation (Rafiuzzaman): per-span `a_raw`, `e_raw`, `d`, `aleatoric`, `epistemic`, `flagged` in `spans.jsonl`;
   `pii_spans_for_eval` in `silver.jsonl`; schema pass rates per teacher in `summary.json`.

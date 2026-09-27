@@ -41,7 +41,9 @@ def test_pipeline(tmp_path):
     mdir = str(tmp_path / "tiny")
     build_tiny(mdir)
     inp = tmp_path / "in.jsonl"
-    write_jsonl(inp, [json.loads(l) for l in open("data/synthetic/teacher_smoke.jsonl")][:2])
+    rows = [json.loads(l) for l in open("data/synthetic/teacher_smoke.jsonl")][:2]
+    rows[0]["split"], rows[1]["split"] = "train", "dev"          # like Saber's per-split export
+    write_jsonl(inp, rows)
     cfg = {"input_file": str(inp), "output_dir": str(tmp_path / "out"),
            "same_tokenizer": {"model": mdir, "dtype": "float32",
                               "variants": ["balanced", "dialect", "finance_pii", "transliteration"]},
@@ -79,5 +81,32 @@ def test_pipeline(tmp_path):
     s = spans.report(cfg, recs, gen_path, info)
     pii = [x for x in recs[0]["spans"] if x["field"] == "pii[0]"][0]
     assert abs(pii["d"] - 2 / 3) < 1e-9 and set(pii["candidates"]) == {"NID", "ACCOUNT"}
-    assert os.path.exists(out_path(cfg, "silver.jsonl")) and s["n_spans"] > 0
+    assert s["n_spans"] > 0
+    check_silver_v02(read_jsonl(out_path(cfg, "silver.jsonl")))
     print(open(out_path(cfg, "report.md")).read()[:1500])
+
+
+def check_silver_v02(silver):
+    """Silver records follow team schema v0.2 and pass Saber's converter gate."""
+    keys = {"id", "schema_version", "input", "clean_input", "normalized_text", "sanitized_prompt", "pii",
+            "preserved_entities", "uncertainties", "routing", "metadata"}
+    assert [r["metadata"]["split"] for r in silver] == ["train", "dev"]
+    for r in silver:
+        assert keys <= set(r) and r["schema_version"] == "0.2" and r["metadata"]["label_source"] == "silver"
+        for p in r["pii"]:
+            if p["start"] is not None:
+                assert r["clean_input"][p["start"]:p["end"]] == p["text"]
+        for u in r["uncertainties"]:
+            assert u["types"] and 0 <= u["aleatoric"] <= 1 and 0 <= u["epistemic"] <= 1
+            if u["start"] is not None:
+                assert r["clean_input"][u["start"]:u["end"]] == u["span"]
+    assert silver[0]["pii"][0]["start"] is not None       # smoke-1 contains 01900000000
+    assert silver[1]["metadata"]["unlocated_spans"] >= 1  # smoke-2 does not: counted, not invented
+    conv = os.path.join(os.path.dirname(__file__), "..", "scripts", "build_student_data.py")
+    if os.path.exists(conv):                                   # Saber's converter (PR #27)
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("bsd", conv)
+        bsd = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(bsd)
+        assert [bsd.check_record(r) for r in silver] == [None, "not_train_split"]
+        assert json.loads(json.dumps(bsd.make_target(silver[0])))["sanitized_prompt"]

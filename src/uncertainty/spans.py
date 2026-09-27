@@ -17,7 +17,8 @@ import re
 from collections import defaultdict
 
 from src.uncertainty.agreement import discordance, overlaps
-from src.teachers.common import out_path, read_jsonl, write_jsonl
+from src.teachers.common import load_inputs, out_path, read_jsonl, write_jsonl
+from src.uncertainty.silver import to_record
 
 log = logging.getLogger(__name__)
 PLACEHOLDER = re.compile(r"<[A-Z_]+_\d+>")
@@ -139,19 +140,9 @@ def run(cfg):
                             (s["epistemic"] >= q and s["e_raw"] >= min_raw))
 
     write_jsonl(out_path(cfg, "spans.jsonl"), records)
-    silver = []
-    for r in records:
-        pj = r["pivot_json"]
-        silver.append({"id": r["id"], "input": r["text"], "target": {
-            "sanitized_prompt": pj["sanitized_prompt"],
-            "pii": [{"type": e["type"], "placeholder": e["placeholder"]} for e in pj["pii"]],
-            "preserved_entities": pj["preserved_entities"],
-            "uncertainties": [{"span": s["span"], "types": s["types"], "candidates": s["candidates"],
-                               "aleatoric": s["aleatoric"], "epistemic": s["epistemic"]}
-                              for s in r["spans"] if s.get("flagged")],
-            "routing": None},  # set by the decision layer (§4.6), not by this module
-            "pii_spans_for_eval": pj["pii"], "pivot_teacher": r["pivot_teacher"]})
-    write_jsonl(out_path(cfg, "silver.jsonl"), silver)
+    inputs = {x["id"]: x for x in load_inputs(cfg)}
+    silver = [to_record(r, inputs.get(r["id"], {}), cfg.get("run_name", "")) for r in records]
+    write_jsonl(out_path(cfg, "silver.jsonl"), silver)   # team schema v0.2, label_source "silver"
     log.info("spans: %d inputs, %d spans, %d flagged", len(records),
              sum(len(r["spans"]) for r in records), sum(s.get("flagged", False) for r in records for s in r["spans"]))
     return records
