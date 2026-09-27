@@ -75,12 +75,15 @@ def main():
         tok = AutoTokenizer.from_pretrained(TEACHER_MODEL)
         lengths = []
         for r in inputs:
-            ids = tok.apply_chat_template(build_messages("balanced", r["text"]), add_generation_prompt=True,
-                                          tokenize=True)
-            lengths.append(len(ids["input_ids"] if isinstance(ids, dict) else ids))
+            prompt = tok.apply_chat_template(build_messages("balanced", r["text"]), add_generation_prompt=True,
+                                             tokenize=False)
+            lengths.append(len(tok(prompt, add_special_tokens=False)["input_ids"]))
         over = sum(n > args.max_prompt_tokens for n in lengths)
         print(f"4. tokenizer: prompt tokens min {min(lengths)}, max {max(lengths)}, "
               f"mean {sum(lengths) / len(lengths):.0f}; over {args.max_prompt_tokens}: {over}")
+        # the system prompt + few-shot examples alone are hundreds of tokens; a tiny number means
+        # the count itself is broken, so fail instead of reporting a false PASS
+        assert min(lengths) > 100, f"token count looks wrong (min {min(lengths)})"
         assert over == 0
 
     print("RESULT: PASS - input file is compatible with the teacher pipeline")

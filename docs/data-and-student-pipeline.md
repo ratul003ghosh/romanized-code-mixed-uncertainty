@@ -67,3 +67,15 @@ adds per-token values.
     python scripts/train_student.py --data data/synthetic/student_smoke.jsonl --output-dir experiments/student/smoke --smoke
     python scripts/infer_student.py --checkpoint experiments/student/smoke --input data/synthetic/controlled_examples_v02.jsonl --output experiments/student/smoke/pred.jsonl --limit 4
     python scripts/validate_jsonl.py --kind record experiments/student/smoke/pred.jsonl
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `ImportError: Found an incompatible version of torchao` in infer_student.py | `pip uninstall -y torchao` (not used by this project; Colab pre-installs an old version that newer peft rejects in 16-bit mode) |
+| `4. tokenizer: prompt tokens min 2` | fixed: the check now counts tokens, not dictionary keys, and fails if counts look impossibly small |
+
+## Verified on 2026-09-27 (Colab T4)
+- 70/70 tests pass; teacher inputs 3000/500/500 rebuild identically; tokenizer: prompts 1158-1362 tokens
+- train_student.py --smoke: 10 steps, loss 1.3313 -> 0.0407, adapter saved (synthetic data, not a result)
+- infer_student.py: checkpoint loaded, 4/4 valid JSON, 0.58 s per input, predictions pass the validator
