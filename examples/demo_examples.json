@@ -1,0 +1,121 @@
+[
+  {
+    "id": "demo_01_safe",
+    "input": "kemon acho? ajke amar meeting ache biket",
+    "input_source": "placeholder — PENDING real record from mlpaper/teacher-inputs (blocked, see Ratul)",
+    "pii_trace": {
+      "sanitized": {
+        "masked": "kemon acho? ajke amar meeting ache biket",
+        "pii": []
+      },
+      "arbitration": {
+        "text": "kemon acho? ajke amar meeting ache biket",
+        "leaked": false,
+        "replacements": []
+      }
+    },
+    "expected": {
+      "types": [],
+      "channel": "none",
+      "route": "PROCEED",
+      "why": "Clear input, no PII, no ambiguity (rule 5)"
+    }
+  },
+  {
+    "id": "demo_02_ambiguous",
+    "input": "eta thik koro",
+    "input_source": "placeholder — PENDING real dataset record",
+    "pii_trace": {
+      "sanitized": {
+        "masked": "eta thik koro",
+        "pii": []
+      },
+      "arbitration": {
+        "text": "eta thik koro",
+        "leaked": false,
+        "replacements": []
+      }
+    },
+    "expected": {
+      "types": [
+        "INTENT"
+      ],
+      "channel": "aleatoric",
+      "route": "ASK_USER",
+      "why": "No clear object; only the user can resolve it (rule 2)"
+    }
+  },
+  {
+    "id": "demo_03_epistemic",
+    "input": "5oo tk pathaisi kalke, taka pay nai",
+    "input_source": "placeholder — PENDING real dataset record",
+    "pii_trace": {
+      "sanitized": {
+        "masked": "5oo tk pathaisi kalke, taka pay nai",
+        "pii": []
+      },
+      "arbitration": {
+        "text": "5oo tk pathaisi kalke, taka pay nai",
+        "leaked": false,
+        "replacements": []
+      }
+    },
+    "expected": {
+      "types": [
+        "NUMERIC_AMBIGUITY"
+      ],
+      "channel": "epistemic",
+      "route": "ESCALATE",
+      "why": "Teachers likely disagree on the amount (rule 3)"
+    }
+  },
+  {
+    "id": "demo_04_pii",
+    "input": "amar number 01712345678, bkash trans id 9X87K, OTP 4821 eta check koren",
+    "input_source": "placeholder — PENDING real dataset record",
+    "pii_trace": {
+      "sanitized": {
+        "masked": "amar number <PHONE_1>, bkash trans id <TXN_ID_1>, OTP <OTP_1> eta check koren",
+        "pii": [
+          {
+            "type": "PHONE",
+            "placeholder": "<PHONE_1>",
+            "text": "01712345678",
+            "start": 12,
+            "end": 23,
+            "score": 0.95
+          },
+          {
+            "type": "TXN_ID",
+            "placeholder": "<TXN_ID_1>",
+            "text": "9X87K",
+            "start": 40,
+            "end": 45,
+            "score": 0.95
+          },
+          {
+            "type": "OTP",
+            "placeholder": "<OTP_1>",
+            "text": "4821",
+            "start": 51,
+            "end": 55,
+            "score": 0.9
+          }
+        ]
+      },
+      "arbitration": {
+        "text": "amar number <PHONE_1>, bkash trans id <TXN_ID_1>, OTP <OTP_1> eta check koren",
+        "leaked": false,
+        "replacements": []
+      }
+    },
+    "expected": {
+      "types": [
+        "PII_BOUNDARY"
+      ],
+      "channel": "n/a",
+      "route": "depends on other spans",
+      "why": "PII must be masked; rule 1 checks nothing leaks"
+    }
+  }
+]
