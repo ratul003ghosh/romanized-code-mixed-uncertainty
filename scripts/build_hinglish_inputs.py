@@ -1,12 +1,13 @@
 """Hinglish teacher inputs from COMI-LINGUA, TN part (proposal Section 3.3, RQ4 generality check).
 
     PYTHONUTF8=1 python scripts/build_hinglish_inputs.py            # dev 100 + test 300 (proposal size)
+    PYTHONUTF8=1 python scripts/build_hinglish_inputs.py --train 1000   # + 1000 training inputs
 
 Source: LingoIITGN/COMI-LINGUA, config "TN" (text normalization), CC-BY-4.0.
   Sentences                      -> input (real, noisy Roman-script Hinglish)
   Annotated by: Annotator 1/2/3  -> metadata.reference_normalizations (all three kept; they can differ)
 Only Roman-script rows are used (rows with any Devanagari character are skipped and counted),
-because the pipeline input is Romanized text. dev comes from TN train, test from TN test.
+because the pipeline input is Romanized text. dev and train come from TN train (no sentence in both), test from TN test.
 Steps and checks are the same as build_teacher_inputs.py (clean_text, filters, PII check, no masking).
 """
 import argparse
@@ -26,7 +27,8 @@ from src.utils.jsonl_validate import BAD_CHARS_RE, DEFAULT_MAX_CHARS  # noqa: E4
 DATASET, CONFIG = "LingoIITGN/COMI-LINGUA", "TN"
 ANNOTATORS = ["Annotated by: Annotator 1", "Annotated by: Annotator 2", "Annotated by: Annotator 3"]
 DEVANAGARI_RE = re.compile(r"[\u0900-\u097F]")
-PLAN = [("test", "test", "HG_TE_"), ("dev", "train", "HG_DV_")]   # (our split, source split, id prefix)
+# (our split, source split, id prefix); dev and train both come from TN train, never the same sentence
+PLAN = [("test", "test", "HG_TE_"), ("dev", "train", "HG_DV_"), ("train", "train", "HG_TR_")]
 
 
 def load_rows(source_file):
@@ -40,6 +42,8 @@ def load_rows(source_file):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--train", type=int, default=0,
+                    help="Hinglish training inputs from TN train (proposal Section 3.2 plans about 5k)")
     ap.add_argument("--dev", type=int, default=100)
     ap.add_argument("--test", type=int, default=300)
     ap.add_argument("--seed", type=int, default=42)
@@ -47,18 +51,20 @@ def main():
     ap.add_argument("--out-dir", default="data/processed")
     ap.add_argument("--source-file", default=None, help="offline JSONL with a `split` field (for tests)")
     args = ap.parse_args()
-    limits = {"dev": args.dev, "test": args.test}
+    limits = {"train": args.train, "dev": args.dev, "test": args.test}
 
     rows = load_rows(args.source_file)
     stats = {"dataset": f"{DATASET} ({CONFIG})" if not args.source_file else args.source_file,
              "limits": limits, "seed": args.seed, "raw_available": {}, "raw_read": Counter(),
              "dropped": Counter(), "final": Counter(), "records_with_pii_detected": Counter(),
              "pii_types": Counter(), "masking_failures": 0, "annotators_disagree": Counter()}
-    seen, kept = set(), {"dev": [], "test": []}
+    seen, kept = set(), {"train": [], "dev": [], "test": []}
     rng = random.Random(args.seed)
     os.makedirs(args.out_dir, exist_ok=True)
 
-    for split, source_split, prefix in PLAN:          # test first, so test sentences never land in dev
+    for split, source_split, prefix in PLAN:          # test first, so test sentences never land in dev/train
+        if limits[split] == 0:
+            continue
         pool = list(rows[source_split])
         stats["raw_available"][source_split] = len(pool)
         rng.shuffle(pool)
@@ -117,6 +123,8 @@ def main():
             })
 
     for split, recs in kept.items():
+        if limits[split] == 0:          # split not requested: no file, not in the counts
+            continue
         stats["final"][split] = len(recs)
         with open(os.path.join(args.out_dir, f"teacher_inputs_hinglish_{split}.jsonl"), "w", encoding="utf-8") as f:
             for r in recs:
@@ -126,7 +134,7 @@ def main():
     with open(os.path.join(args.out_dir, "teacher_inputs_hinglish_stats.json"), "w", encoding="utf-8") as f:
         json.dump(stats, f, indent=2, ensure_ascii=False)
     print(json.dumps(stats, indent=2, ensure_ascii=False))
-    print(f"\nWrote teacher_inputs_hinglish_{{dev,test}}.jsonl to {args.out_dir}")
+    print(f"\nWrote teacher_inputs_hinglish_{{train,dev,test}}.jsonl to {args.out_dir}")
 
 
 if __name__ == "__main__":

@@ -209,3 +209,20 @@ def test_finance_builder_tags_script(tmp_path):
     assert stats["by_script"] == {"english": 1, "bangla_script": 1, "banglish": 1}
     assert stats["by_label"] == {"scam": 2, "ham": 1}
     assert validate_file(str(out / "teacher_inputs_finance_test.jsonl"), "teacher_input").ok
+
+
+def test_hinglish_train_split_never_overlaps_dev(tmp_path):
+    a = HG_A
+    rows = [{"split": "test", "Sentences": f"test line {i} yaar", a[0]: "x", a[1]: "x", a[2]: "x"} for i in range(4)]
+    rows += [{"split": "train", "Sentences": f"train line {i} yaar", a[0]: "x", a[1]: "x", a[2]: "x"} for i in range(8)]
+    src = tmp_path / "hg.jsonl"
+    src.write_text("\n".join(json.dumps(r) for r in rows), encoding="utf-8")
+    out = tmp_path / "out"
+    res = run("scripts/build_hinglish_inputs.py", "--source-file", str(src), "--out-dir", str(out),
+              "--train", "5", "--dev", "3", "--test", "4")
+    assert res.returncode == 0, res.stderr
+    stats = json.loads((out / "teacher_inputs_hinglish_stats.json").read_text())
+    assert stats["final"] == {"train": 5, "dev": 3, "test": 4}
+    texts = {s: {json.loads(l)["clean_input"] for l in open(out / f"teacher_inputs_hinglish_{s}.jsonl", encoding="utf-8")}
+             for s in ("train", "dev", "test")}
+    assert not texts["train"] & texts["dev"] and not texts["train"] & texts["test"]

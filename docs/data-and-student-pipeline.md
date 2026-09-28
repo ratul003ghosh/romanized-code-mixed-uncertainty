@@ -196,3 +196,19 @@ Commands: build_teacher_inputs.py --train 4886; build_dialect_inputs.py --train 
 build_banglishrev_inputs.py --n-english 300 --n-bangla 300. All files: validator 0 problems.
 Before the one-time faculty GPU run, the teacher time for 10,000 inputs must be estimated from the
 smoke test's sec_per_item.
+
+## 12. Scaled to 15,000 records
+Same real sources, more rows (no new sources, no invented data):
+
+| Dataset | 10k build | 15k build | Command |
+|---|---|---|---|
+| BanglaTLit | 5,886 (4,886 / 500 / 500) | 8,886 (7,886 / 500 / 500) | `build_teacher_inputs.py --train 7886` |
+| Dialects | 1,900 (1,500 / 100 / 300) | 2,900 (2,500 / 100 / 300), 500 train per region | `build_dialect_inputs.py --train 2500` |
+| Hinglish | 400 (- / 100 / 300) | 1,400 (1,000 / 100 / 300) | `build_hinglish_inputs.py --train 1000` |
+| BanglishRev, English, Bangla script, finance, medical | 460 + 300 + 300 + 519 + 235 | unchanged | |
+| **Total** | **10,000** | **15,000** | |
+
+The new Hinglish train split comes from TN train and never shares a sentence with Hinglish dev or test;
+it follows proposal Section 3.2, which plans about 5k Hinglish inputs for the silver set. Test sets are
+unchanged and earlier records keep their IDs. The one-time teacher run time for 15,000 inputs must be
+estimated from the smoke test's sec_per_item before handing it over.
