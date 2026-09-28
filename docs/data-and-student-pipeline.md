@@ -151,3 +151,9 @@ other splits (in any dialect). The standard Banglish column contains some typing
   script split is approximate. 9 PII detections despite the authors' anonymization: probably
   placeholders or false alarms; check privately before reporting.
 - All 4 files: validator 0 problems.
+
+### Results: control sets (Colab, 2026-09-28)
+- BanglishRev English-only: 200 (from 246,097 candidates); Bangla script: 200 (from 388,745 candidates).
+  Banglish slice rebuilt with the same seed: identical 460 (reproducible).
+- Medical (BanglaCHQ-Summ test split): 235; 0 PII detected (detector is not built for Bangla script).
+- All three files: validator 0 problems.
