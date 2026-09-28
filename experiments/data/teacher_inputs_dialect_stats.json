@@ -2,7 +2,7 @@
   "dataset": "Vashantor (CSV)",
   "seed": 42,
   "limits": {
-    "train": 500,
+    "train": 1500,
     "dev": 100,
     "test": 300
   },
@@ -23,11 +23,13 @@
     "train:Noakhali": 1875,
     "train:Sylhet": 1875
   },
-  "dropped": {},
+  "dropped": {
+    "duplicate_dialect_text": 1
+  },
   "final": {
     "test": 300,
     "dev": 100,
-    "train": 500
+    "train": 1500
   },
   "final_per_region": {
     "test": {
@@ -45,13 +47,13 @@
       "Sylhet": 20
     },
     "train": {
-      "Barishal": 100,
-      "Chittagong": 100,
-      "Mymensingh": 100,
-      "Noakhali": 100,
-      "Sylhet": 100
+      "Barishal": 300,
+      "Chittagong": 300,
+      "Mymensingh": 300,
+      "Noakhali": 300,
+      "Sylhet": 300
     }
   },
   "records_with_pii_detected": 0,
-  "total_final": 900
+  "total_final": 1900
 }

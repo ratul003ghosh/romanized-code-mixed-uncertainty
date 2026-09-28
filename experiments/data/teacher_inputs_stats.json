@@ -1,7 +1,7 @@
 {
   "dataset": "aplycaebous/BanglaTLit",
   "limits": {
-    "train": 3000,
+    "train": 4886,
     "dev": 500,
     "test": 500
   },
@@ -9,30 +9,33 @@
   "raw_read": {
     "test": 500,
     "dev": 500,
-    "train": 3000
+    "train": 4888
   },
   "after_preprocessing": {
     "test": 500,
     "dev": 500,
-    "train": 3000
+    "train": 4888
   },
-  "dropped": {},
+  "dropped": {
+    "duplicate_same_split": 1,
+    "too_long": 1
+  },
   "final": {
-    "train": 3000,
+    "train": 4886,
     "dev": 500,
     "test": 500
   },
   "records_with_pii_detected": {
     "test": 1,
     "dev": 1,
-    "train": 13
+    "train": 25
   },
   "pii_types": {
-    "OTP": 1,
-    "ID_NUMBER": 5,
-    "PHONE": 8,
-    "NAME": 3
+    "OTP": 3,
+    "ID_NUMBER": 7,
+    "PHONE": 15,
+    "NAME": 4
   },
   "masking_failures": 0,
-  "total_final": 4000
+  "total_final": 5886
 }

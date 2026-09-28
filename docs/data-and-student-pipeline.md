@@ -185,3 +185,14 @@ Citations:
 
 Three datasets are non-commercial (NC). This is fine for research; derived data from them must not be
 released commercially, and share-alike (SA) applies to anything redistributed from them.
+
+## 11. Scaled to 10,000 records (2026-09-28)
+Rebuilt with larger sizes from the same real sources (no new data sources, no invented data):
+BanglaTLit 5,886 (train 4,886 / dev 500 / test 500; 1 duplicate + 1 too-long row replaced),
+dialects 1,900 (train 1,500 = 300 per region / dev 100 / test 300; 1 duplicate replaced),
+Hinglish 400, BanglishRev 460, English 300, Bangla script 300, finance 519, medical 235 = 10,000.
+Test sets keep their proposal sizes; the growth is in training data. Earlier records keep their IDs.
+Commands: build_teacher_inputs.py --train 4886; build_dialect_inputs.py --train 1500;
+build_banglishrev_inputs.py --n-english 300 --n-bangla 300. All files: validator 0 problems.
+Before the one-time faculty GPU run, the teacher time for 10,000 inputs must be estimated from the
+smoke test's sec_per_item.

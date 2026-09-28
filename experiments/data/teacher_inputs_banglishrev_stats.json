@@ -21,8 +21,8 @@
     "test": 460,
     "pii_detected_group": 60,
     "random_group": 400,
-    "english": 200,
-    "bangla_script": 200
+    "english": 300,
+    "bangla_script": 300
   },
   "pii_types_in_final": {
     "NAME": 10,
