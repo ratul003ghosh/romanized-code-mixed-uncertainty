@@ -49,7 +49,7 @@ pip install -r requirements.txt
 See `scripts/run_full_experiment.py`.
 
 ## 16. GPU Instructions
-See `docs/gpu-run.md`.
+See `docs/faculty-run.md`.
 
 ## 17. Current Status
 See `docs/status.md`.

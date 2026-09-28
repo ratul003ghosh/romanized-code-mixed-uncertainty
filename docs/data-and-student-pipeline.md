@@ -15,7 +15,7 @@ Output in `data/processed/` (not in git):
 | File | Use |
 |---|---|
 | `teacher_inputs.jsonl` | = train split; the file `configs/teacher_full*.yaml` reads by default |
-| `teacher_inputs_{train,dev,test}.jsonl` | one file per split (per-split teacher runs, see docs/gpu-run.md) |
+| `teacher_inputs_{train,dev,test}.jsonl` | one file per split (per-split teacher runs, see docs/faculty-run.md) |
 | `teacher_inputs_stats.json` | every count: raw, after cleaning, dropped (by reason), final, PII |
 
 Steps: raw -> `clean_text` -> filter (malformed, empty, too long, broken unicode, exact duplicates;
