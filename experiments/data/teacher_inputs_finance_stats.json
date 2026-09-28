@@ -1,0 +1,24 @@
+{
+  "dataset": "Financial scams detection dataset (Mendeley znsk27yk3h)",
+  "raw_read": 523,
+  "dropped": {
+    "duplicate": 4
+  },
+  "final": 519,
+  "by_script": {
+    "unclear": 169,
+    "english": 250,
+    "bangla_script": 100
+  },
+  "by_label": {
+    "scam": 309,
+    "ham": 210
+  },
+  "records_with_pii_detected": 9,
+  "pii_types": {
+    "OTP": 5,
+    "ID_NUMBER": 2,
+    "PHONE": 1,
+    "NAME": 1
+  }
+}

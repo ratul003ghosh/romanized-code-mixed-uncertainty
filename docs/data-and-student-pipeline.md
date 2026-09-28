@@ -123,6 +123,31 @@ the method itself targets Romanized input. BanglishRev and medical text are priv
 The rule-based PII detector is built for Latin letters and ASCII digits, so "0 PII detected" in
 Bangla-script text does not mean the text contains no PII.
 
-Still pending: dialects (Vashantor, Mendeley bj5jgk878b, has Banglish text for Chittagong, Noakhali,
-Sylhet, Barishal, Mymensingh) and finance (Mendeley znsk27yk3h scam messages); both need a manual
-download from Mendeley before a converter can be written against their real columns.
+## 9. Dialects and finance (faculty request)
+
+| Set | Script | Output | Notes |
+|---|---|---|---|
+| Vashantor (Mendeley bj5jgk878b v2) | `build_dialect_inputs.py` | `teacher_inputs_dialect_{train,dev,test}.jsonl` (500 / 100 / 300) | Romanized dialect text, 5 regions: Barishal, Chittagong, Mymensingh, Noakhali, Sylhet (no Rangpur); balanced per region |
+| Financial scams (Mendeley znsk27yk3h v1) | `build_finance_inputs.py` | `teacher_inputs_finance_test.jsonl` (all 523 minus drops) | Bangla / Banglish / English messages, scam or ham; eval-only |
+
+Setup (raw files are git-ignored):
+
+    python -m zipfile -e "<Vashantor zip>" data/raw/vashantor
+    python -m zipfile -e data/raw/vashantor/*/Vashantor_CSV_Format.zip data/raw/vashantor/csv
+    python -m zipfile -e "<Financial scams zip>" data/raw/finance_scams
+    PYTHONUTF8=1 python scripts/build_dialect_inputs.py
+    PYTHONUTF8=1 python scripts/build_finance_inputs.py
+
+Vashantor gives each sentence in standard Banglish, standard Bangla, dialect Bangla, dialect Banglish
+and English; all are kept as references. A standard sentence used in one split is blocked from the
+other splits (in any dialect). The standard Banglish column contains some typing noise
+(e.g. "ab bbu"), so treat the references as noisy.
+
+### Results of the real build (laptop, 2026-09-28)
+- Dialects (Vashantor): 900 inputs (train 500 / dev 100 / test 300), exactly balanced over 5 regions
+  (100 / 20 / 60 per region); 0 dropped; 0 PII detected.
+- Finance: 519 inputs (4 duplicates dropped); scam 309 / ham 210; by script: english 250,
+  bangla_script 100, unclear 169, banglish 0. The script rule could not decide 169 messages, so the
+  script split is approximate. 9 PII detections despite the authors' anonymization: probably
+  placeholders or false alarms; check privately before reporting.
+- All 4 files: validator 0 problems.

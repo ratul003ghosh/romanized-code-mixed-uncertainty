@@ -157,3 +157,55 @@ def test_medical_builder(tmp_path):
     rec = json.loads((out / "teacher_inputs_medical_test.jsonl").read_text(encoding="utf-8"))
     assert rec["metadata"]["surface_form"] == "bangla_script" and rec["metadata"]["domain"] == "medical"
     assert validate_file(str(out / "teacher_inputs_medical_test.jsonl"), "teacher_input").ok
+
+
+def _vashantor_fixture(root):
+    import csv as _csv
+    regions = ["barishal", "chittagong", "mymensingh", "noakhali", "sylhet"]
+    rows = {"Test": [("tomar abbu kemon ache?", "{r} dialect A")],
+            "Validation": [("ami bhat khabo", "{r} dialect B")],
+            # same standard sentence as Test but different dialect wording -> must be dropped from train
+            "Train": [("tomar abbu kemon ache?", "{r} dialect A2"), ("amar mon kharap", "{r} dialect C")]}
+    for folder, items in rows.items():
+        (root / folder).mkdir(parents=True)
+        for r in regions:
+            with open(root / folder / f"{r.capitalize()} {folder} Translation.csv", "w", encoding="utf-8-sig",
+                      newline="") as fh:
+                w = _csv.writer(fh)
+                w.writerow(["bangla_speech ", "banglish_speech ", f"{r}_bangla_speech ", f"{r}_banglish_speech ",
+                            "region_name ", "english_speech"])
+                for std, dia in items:
+                    w.writerow(["বাংলা", std + " ", "ডায়ালেক্ট", dia.format(r=r) + " ", r, "English"])
+
+
+def test_dialect_builder_balances_regions_and_blocks_cross_split_sentences(tmp_path):
+    _vashantor_fixture(tmp_path / "csv")
+    out = tmp_path / "out"
+    res = run("scripts/build_dialect_inputs.py", "--data-dir", str(tmp_path / "csv"), "--out-dir", str(out),
+              "--train", "10", "--dev", "5", "--test", "5")
+    assert res.returncode == 0, res.stderr
+    stats = json.loads((out / "teacher_inputs_dialect_stats.json").read_text())
+    assert stats["final"] == {"test": 5, "dev": 5, "train": 5}
+    assert stats["dropped"] == {"standard_sentence_in_other_split": 5}
+    rec = json.loads(open(out / "teacher_inputs_dialect_test.jsonl", encoding="utf-8").readline())
+    assert rec["metadata"]["surface_form"] == "dialect" and rec["metadata"]["reference_standard_banglish"]
+    for split in ("train", "dev", "test"):
+        assert validate_file(str(out / f"teacher_inputs_dialect_{split}.jsonl"), "teacher_input").ok
+
+
+def test_finance_builder_tags_script(tmp_path):
+    d = tmp_path / "fin"
+    d.mkdir()
+    (d / "data.csv").write_text(
+        "label,message\n"
+        "scam,Congratulations you have won the bKash offer and it is yours to claim now\n"
+        "ham,আপনার বিকাশ একাউন্টে ৫০০ টাকা জমা হয়েছে\n"
+        "scam,apnar bkash account block hobe ekhon amake OTP ta pathan\n"
+        "ham,\n", encoding="utf-8")
+    out = tmp_path / "out"
+    res = run("scripts/build_finance_inputs.py", "--data-dir", str(d), "--out-dir", str(out))
+    assert res.returncode == 0, res.stderr
+    stats = json.loads((out / "teacher_inputs_finance_stats.json").read_text())
+    assert stats["by_script"] == {"english": 1, "bangla_script": 1, "banglish": 1}
+    assert stats["by_label"] == {"scam": 2, "ham": 1}
+    assert validate_file(str(out / "teacher_inputs_finance_test.jsonl"), "teacher_input").ok
