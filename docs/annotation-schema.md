@@ -63,7 +63,8 @@ TRANSLITERATION, NUMERIC_AMBIGUITY, PII_BOUNDARY, DIALECT_MEANING, INTENT
 The same PII value gets the same placeholder within one prompt.
 
 **surface_form** (results are reported per surface form, proposal Section 6.2):
-banglish, romanized, code_mixed, dialect, hinglish
+banglish, romanized, code_mixed, dialect, hinglish, bangla_script, english
+(`bangla_script` and `english` are control/comparison sets; the method targets Romanized input.)
 
 ## metadata.label_source
 
@@ -73,6 +74,7 @@ banglish, romanized, code_mixed, dialect, hinglish
 | gold | Checked by human annotators | Evaluation only |
 | synthetic | Written by the team with fake PII | Testing PII code |
 | illustrative | Hand-made example, numbers not from experiments | Documentation only |
+| prediction | Output of a model (e.g. scripts/infer_student.py) | Evaluation input only |
 | none | No labels yet (raw text) | Input to teachers |
 
 **Rule: never evaluate on silver data, never train on gold data.**

@@ -1,0 +1,38 @@
+{
+  "dataset": "BanglishRev/bangla-english-and-code-mixed-ecommerce-review-dataset / reviews v1.json",
+  "seed": 42,
+  "min_words": 4,
+  "products": 128494,
+  "reviews_total": 3239574,
+  "reviews_with_text": 1746943,
+  "language_rule": {
+    "bangla_script": 530066,
+    "too_short": 488886,
+    "banglish": 153139,
+    "english_or_unclear": 574852
+  },
+  "dropped": {
+    "duplicate": 6631,
+    "broken_unicode": 4
+  },
+  "banglish_candidates": 146504,
+  "banglish_with_pii_detected": 60,
+  "final": {
+    "test": 460,
+    "pii_detected_group": 60,
+    "random_group": 400,
+    "english": 300,
+    "bangla_script": 300
+  },
+  "pii_types_in_final": {
+    "NAME": 10,
+    "ID_NUMBER": 18,
+    "ADDRESS": 4,
+    "PHONE": 28,
+    "OTP": 1,
+    "EMAIL": 1
+  },
+  "masking_failures": 0,
+  "english_candidates": 246097,
+  "bangla_script_candidates": 388745
+}

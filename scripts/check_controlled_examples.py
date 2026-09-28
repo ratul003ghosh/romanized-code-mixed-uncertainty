@@ -1,46 +1,38 @@
+"""Check the controlled examples (schema v0.2): counts per category and position correctness.
+
+Usage: python scripts/check_controlled_examples.py
+"""
 import json
-from pathlib import Path
+from collections import Counter
 
-DATA = Path(__file__).parent / "examples" / "controlled_examples.json"
+PATH = "data/synthetic/controlled_examples_v02.jsonl"
 
-with open(DATA, encoding="utf-8") as f:
-    examples = json.load(f)
-
-print("=" * 60)
-print("MASRAFI DAY 1 - CONTROLLED EXAMPLES CHECK")
-print("=" * 60)
-print(f"Total examples: {len(examples)}")
-
-categories = {}
-for ex in examples:
-    categories[ex["category"]] = categories.get(ex["category"], 0) + 1
-
-print("\nCategories:")
-for category, count in sorted(categories.items()):
-    print(f"  {category}: {count}")
-
-print("\nExamples:")
-for ex in examples:
-    print(f'- {ex["id"]}: {ex["category"]} -> {ex["expected_routing"]}')
-
-print("\nValidation:")
-required = ["id", "category", "input", "normalized", "pii_spans",
-            "uncertainty_spans", "expected_routing", "notes"]
+rows = [json.loads(line) for line in open(PATH, encoding="utf-8") if line.strip()]
 
 errors = []
-for ex in examples:
-    missing = [field for field in required if field not in ex]
-    if missing:
-        errors.append(f'{ex.get("id", "UNKNOWN")}: missing {missing}')
+for r in rows:
+    text = r["clean_input"]
+    for p in r["pii"]:
+        if text[p["start"]:p["end"]] != p["text"]:
+            errors.append(f"{r['id']}: PII position wrong for {p['text']!r}")
+    for u in r["uncertainties"]:
+        if text[u["start"]:u["end"]] != u["span"]:
+            errors.append(f"{r['id']}: uncertainty position wrong for {u['span']!r}")
+    if r["metadata"]["label_source"] != "synthetic":
+        errors.append(f"{r['id']}: label_source should be 'synthetic'")
 
-if errors:
-    print("FAILED")
-    for error in errors:
-        print(" ", error)
-else:
-    print("PASSED - all examples contain the required fields.")
-
-print("\nIMPORTANT:")
-print("These are controlled synthetic development examples.")
-print("They are NOT human-annotated gold data.")
-print("No research metric/result is reported by this script.")
+print("=" * 50)
+print("CONTROLLED EXAMPLES CHECK (schema v0.2)")
+print("=" * 50)
+print(f"Total examples: {len(rows)}")
+print("\nBy category:")
+for cat, n in sorted(Counter(r["metadata"]["category"] for r in rows).items()):
+    print(f"  {cat}: {n}")
+print("\nBy expected routing:")
+for route, n in sorted(Counter(r["routing"] for r in rows).items()):
+    print(f"  {route}: {n}")
+skipped = [r["id"] for r in rows if r["metadata"]["placeholder_input"]]
+print(f"\nPlaceholder inputs (skip when running models): {skipped}")
+print(f"\nProblems found: {len(errors)}")
+for e in errors:
+    print("  -", e)

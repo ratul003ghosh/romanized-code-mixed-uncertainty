@@ -1,0 +1,43 @@
+{
+  "dataset": "aplycaebous/BanglaTLit",
+  "limits": {
+    "train": 7886,
+    "dev": 500,
+    "test": 500
+  },
+  "max_chars": 1000,
+  "raw_read": {
+    "test": 500,
+    "dev": 500,
+    "train": 7891
+  },
+  "after_preprocessing": {
+    "test": 500,
+    "dev": 500,
+    "train": 7891
+  },
+  "dropped": {
+    "duplicate_same_split": 3,
+    "too_long": 1,
+    "duplicate_across_splits": 1
+  },
+  "final": {
+    "train": 7886,
+    "dev": 500,
+    "test": 500
+  },
+  "records_with_pii_detected": {
+    "test": 1,
+    "dev": 1,
+    "train": 37
+  },
+  "pii_types": {
+    "OTP": 3,
+    "ID_NUMBER": 10,
+    "PHONE": 17,
+    "NAME": 11,
+    "TXN_ID": 1
+  },
+  "masking_failures": 0,
+  "total_final": 8886
+}
