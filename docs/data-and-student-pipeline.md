@@ -79,3 +79,22 @@ adds per-token values.
 - 70/70 tests pass; teacher inputs 3000/500/500 rebuild identically; tokenizer: prompts 1158-1362 tokens
 - train_student.py --smoke: 10 steps, loss 1.3313 -> 0.0407, adapter saved (synthetic data, not a result)
 - infer_student.py: checkpoint loaded, 4/4 valid JSON, 0.58 s per input, predictions pass the validator
+
+## 7. More datasets (requested by the faculty)
+
+| Dataset | Script | Output (data/processed/, git-ignored) | Role |
+|---|---|---|---|
+| COMI-LINGUA TN (Hinglish, CC-BY-4.0) | `scripts/build_hinglish_inputs.py` | `teacher_inputs_hinglish_{dev,test}.jsonl` (100 / 300) | RQ4 generality check (proposal Section 3.3) |
+| BanglishRev (CC-BY-NC-SA-4.0) | `scripts/build_banglishrev_inputs.py` | `teacher_inputs_banglishrev_test.jsonl` (100 PII + 400 random) | Real-PII evaluation slice only (Section 3.1) |
+
+    PYTHONUTF8=1 python scripts/build_hinglish_inputs.py
+    PYTHONUTF8=1 python scripts/build_banglishrev_inputs.py
+    python scripts/validate_jsonl.py --kind teacher_input data/processed/teacher_inputs_hinglish_*.jsonl data/processed/teacher_inputs_banglishrev_test.jsonl
+
+- Hinglish: only Roman-script rows (Devanagari rows skipped and counted); all three annotator
+  normalizations kept in `metadata.reference_normalizations`.
+- BanglishRev: only the review text is kept (no buyer ID, reply, dates or images). Banglish is chosen by a
+  transparent word-list rule (see the script); counts per rule are in the stats file. Every record is
+  `split: test`, `eval_only: true`. **Contains organic PII: never commit, never share publicly, and use
+  only after the team lead's ethics OK.**
+- Dialects (5-Dialects-BN) are still pending: its download link has not been found.

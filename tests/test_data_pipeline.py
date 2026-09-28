@@ -97,3 +97,46 @@ def test_student_target_and_prediction_roundtrip():
     assert [(p["start"], p["end"]) for p in pred["pii"]] == [(41, 46), (62, 72)]
     bad = to_prediction(row, "not json", {}, "ckpt")
     assert not bad["metadata"]["json_valid"] and bad["pii"] == []
+
+
+HG_A = ["Annotated by: Annotator 1", "Annotated by: Annotator 2", "Annotated by: Annotator 3"]
+
+
+def test_hinglish_builder(tmp_path):
+    rows = [{"split": "test", "Sentences": f"ABB KI BAAR {i} PAR YAAR", HG_A[0]: "Ab ki baar",
+             HG_A[1]: "ab ki baar", HG_A[2]: "Ab ki paar"} for i in range(5)]
+    rows += [{"split": "test", "Sentences": "देश (India) में"},
+             {"split": "train", "Sentences": "ABB KI BAAR 0 PAR YAAR"},          # duplicate of a test row
+             {"split": "train", "Sentences": "Tum se na ho paayega", HG_A[0]: "x", HG_A[1]: "x", HG_A[2]: "x"}]
+    src = tmp_path / "hg.jsonl"
+    src.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows), encoding="utf-8")
+    out = tmp_path / "out"
+    res = run("scripts/build_hinglish_inputs.py", "--source-file", str(src), "--out-dir", str(out))
+    assert res.returncode == 0, res.stderr
+    stats = json.loads((out / "teacher_inputs_hinglish_stats.json").read_text())
+    assert stats["final"] == {"dev": 1, "test": 5}
+    assert stats["dropped"] == {"devanagari_script": 1, "duplicate": 1}
+    assert stats["annotators_disagree"] == {"test": 5}
+    for split in ("dev", "test"):
+        assert validate_file(str(out / f"teacher_inputs_hinglish_{split}.jsonl"), "teacher_input").ok
+
+
+def test_banglishrev_builder_keeps_banglish_only_and_is_eval_only(tmp_path):
+    revs = ["খুব ভালো", "very good product and nice quality really", "ok",
+            "amar number 01712345678 e call dile valo hoy", "product ta onek valo ache",
+            "product ta onek valo ache", "Khob valo kinto selar shobidha jonok naa"]
+    data = [{"Root Category": "Phones", "Reviews": [{"Buyer ID": 7, "Review Content": r} for r in revs]}]
+    src = tmp_path / "br.json"
+    src.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    out = tmp_path / "out"
+    res = run("scripts/build_banglishrev_inputs.py", "--json-path", str(src), "--out-dir", str(out))
+    assert res.returncode == 0, res.stderr
+    stats = json.loads((out / "teacher_inputs_banglishrev_stats.json").read_text())
+    assert stats["language_rule"] == {"bangla_script": 1, "english_or_unclear": 1, "too_short": 1, "banglish": 4}
+    assert stats["final"] == {"test": 3, "pii_detected_group": 1, "random_group": 2}
+    path = out / "teacher_inputs_banglishrev_test.jsonl"
+    assert validate_file(str(path), "teacher_input").ok
+    for line in open(path, encoding="utf-8"):
+        rec = json.loads(line)
+        assert rec["metadata"]["split"] == "test" and rec["metadata"]["eval_only"]
+        assert "Buyer ID" not in json.dumps(rec)
