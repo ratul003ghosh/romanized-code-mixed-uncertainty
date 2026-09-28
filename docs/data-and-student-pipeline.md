@@ -157,3 +157,31 @@ other splits (in any dialect). The standard Banglish column contains some typing
   Banglish slice rebuilt with the same seed: identical 460 (reproducible).
 - Medical (BanglaCHQ-Summ test split): 235; 0 PII detected (detector is not built for Bangla script).
 - All three files: validator 0 problems.
+
+## 10. Dataset licences and citations
+
+| Dataset | Version used | Licence | What it allows |
+|---|---|---|---|
+| BanglaTLit (aplycaebous/BanglaTLit) | Hugging Face | MIT | research + commercial, keep notice |
+| Vashantor | Mendeley V2, doi:10.17632/bj5jgk878b.2 | CC BY 4.0 | research + commercial, cite |
+| COMI-LINGUA (LingoIITGN/COMI-LINGUA) | Hugging Face | CC BY 4.0 | research + commercial, cite |
+| BanglishRev | Hugging Face, "reviews v1.json" | CC BY-NC-SA 4.0 | non-commercial, share-alike, cite |
+| BanglaCHQ-Summ | GitHub alvi-khan/BanglaCHQ-Summ | CC BY-NC-SA 4.0 | non-commercial, share-alike, cite |
+| Financial scams detection dataset | Mendeley V1, doi:10.17632/znsk27yk3h.1 (a V2 exists, not used) | CC BY 4.0 | research + commercial, cite |
+
+Citations:
+- Fahim et al. BanglaTLit: a benchmark dataset for back-transliteration of Romanized Bangla. Findings of EMNLP 2024.
+- Faria, F. T. J.; Bin Moin, M.; Al Wase, A.; Sani, M. R.; Ahmmed, M.; Muhammad, T. (2024). Vashantor: A Large-scale
+  Multilingual Benchmark Dataset for Automated Translation of Bangla Regional Dialects to Bangla Language.
+  Mendeley Data, V2, doi:10.17632/bj5jgk878b.2
+- Sheth, R.; Beniwal, H.; Singh, M. COMI-LINGUA: Expert Annotated Large-Scale Dataset for Multitask NLP in
+  Hindi-English Code-Mixing. Findings of EMNLP 2025.
+- Shamael, M. N. et al. BanglishRev: A Large-Scale Bangla-English and Code-mixed Dataset of Product Reviews in
+  E-Commerce. NeurIPS 2024 Datasets and Benchmarks (arXiv 2412.13161).
+- Khan, A. et al. BanglaCHQ-Summ: An Abstractive Summarization Dataset for Medical Queries in Bangla
+  Conversational Speech. BLP Workshop, EMNLP 2023.
+- Financial scams detection dataset (2025). International University of Business Agriculture and Technology.
+  Mendeley Data, V1, doi:10.17632/znsk27yk3h.1
+
+Three datasets are non-commercial (NC). This is fine for research; derived data from them must not be
+released commercially, and share-alike (SA) applies to anything redistributed from them.
