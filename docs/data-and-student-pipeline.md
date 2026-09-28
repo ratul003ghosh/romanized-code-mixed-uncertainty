@@ -212,3 +212,8 @@ The new Hinglish train split comes from TN train and never shares a sentence wit
 it follows proposal Section 3.2, which plans about 5k Hinglish inputs for the silver set. Test sets are
 unchanged and earlier records keep their IDs. The one-time teacher run time for 15,000 inputs must be
 estimated from the smoke test's sec_per_item before handing it over.
+
+### Result of the 15k build (Colab, 2026-09-28)
+TOTAL 15,000 records, 15,000 unique IDs, 14 files, 14/14 pass validation. BanglaTLit 8,886; dialects 2,900
+(5 duplicates replaced); Hinglish 1,400; BanglishRev 460; English 300; Bangla script 300; finance 519; medical 235.
+Private bundle: teacher_inputs_15000_PRIVATE.zip (Google Drive, restricted).
