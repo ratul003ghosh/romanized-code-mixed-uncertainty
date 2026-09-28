@@ -20,7 +20,9 @@
   "final": {
     "test": 460,
     "pii_detected_group": 60,
-    "random_group": 400
+    "random_group": 400,
+    "english": 200,
+    "bangla_script": 200
   },
   "pii_types_in_final": {
     "NAME": 10,
@@ -30,5 +32,7 @@
     "OTP": 1,
     "EMAIL": 1
   },
-  "masking_failures": 0
+  "masking_failures": 0,
+  "english_candidates": 246097,
+  "bangla_script_candidates": 388745
 }
