@@ -133,10 +133,27 @@ def test_banglishrev_builder_keeps_banglish_only_and_is_eval_only(tmp_path):
     assert res.returncode == 0, res.stderr
     stats = json.loads((out / "teacher_inputs_banglishrev_stats.json").read_text())
     assert stats["language_rule"] == {"bangla_script": 1, "english_or_unclear": 1, "too_short": 1, "banglish": 4}
-    assert stats["final"] == {"test": 3, "pii_detected_group": 1, "random_group": 2}
+    assert stats["final"] == {"test": 3, "pii_detected_group": 1, "random_group": 2,
+                              "english": 1, "bangla_script": 0}
+    assert validate_file(str(out / "teacher_inputs_banglishrev_english_test.jsonl"), "teacher_input").ok
     path = out / "teacher_inputs_banglishrev_test.jsonl"
     assert validate_file(str(path), "teacher_input").ok
     for line in open(path, encoding="utf-8"):
         rec = json.loads(line)
         assert rec["metadata"]["split"] == "test" and rec["metadata"]["eval_only"]
         assert "Buyer ID" not in json.dumps(rec)
+
+
+def test_medical_builder(tmp_path):
+    d = tmp_path / "Dataset"
+    d.mkdir()
+    (d / "test.csv").write_text("id,question,indices,summary\n1,আমার মাথা ব্যথা করে কি করব,0,মাথা ব্যথা\n"
+                                "2,আমার মাথা ব্যথা করে কি করব,1,dup\n3,,2,empty\n", encoding="utf-8")
+    out = tmp_path / "out"
+    res = run("scripts/build_medical_inputs.py", "--data-dir", str(d), "--out-dir", str(out))
+    assert res.returncode == 0, res.stderr
+    stats = json.loads((out / "teacher_inputs_medical_stats.json").read_text())
+    assert stats["final"] == 1 and stats["dropped"] == {"duplicate": 1, "empty_after_cleaning": 1}
+    rec = json.loads((out / "teacher_inputs_medical_test.jsonl").read_text(encoding="utf-8"))
+    assert rec["metadata"]["surface_form"] == "bangla_script" and rec["metadata"]["domain"] == "medical"
+    assert validate_file(str(out / "teacher_inputs_medical_test.jsonl"), "teacher_input").ok

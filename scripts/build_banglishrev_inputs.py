@@ -68,10 +68,37 @@ def classify(text, min_words):
     return "banglish" if bn >= 2 and bn >= en else "english_or_unclear"
 
 
+def is_plain_english(text):
+    """Strict: no Banglish word at all and at least 3 English function words."""
+    words = WORD_RE.findall(text.lower())
+    return not any(w in BANGLISH_WORDS for w in words) and sum(w in ENGLISH_WORDS for w in words) >= 3
+
+
+def make_record(rid, text, clean, category, found, language, surface_form, group):
+    return {
+        "id": rid,
+        "schema_version": "0.2",
+        "input": text,
+        "clean_input": clean,
+        "normalized_text": None, "sanitized_prompt": None,
+        "pii": [], "preserved_entities": [], "uncertainties": [], "routing": None,
+        "metadata": {
+            "language": language, "surface_form": surface_form, "source": "BanglishRev",
+            "product_category": category, "sample_group": group,
+            "pii_detected": [{"type": f["type"], "text": f["text"], "start": f["start"], "end": f["end"]}
+                             for f in found],
+            "eval_only": True, "contains_organic_pii": True,
+            "label_source": "none", "split": "test",
+        },
+    }
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--n-pii", type=int, default=100, help="reviews with detected PII to include")
     ap.add_argument("--n-random", type=int, default=400, help="other Banglish reviews to include")
+    ap.add_argument("--n-english", type=int, default=200, help="English-only reviews (separate file)")
+    ap.add_argument("--n-bangla", type=int, default=200, help="Bangla-script reviews (separate file)")
     ap.add_argument("--min-words", type=int, default=4)
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--max-chars", type=int, default=DEFAULT_MAX_CHARS)
@@ -92,6 +119,7 @@ def main():
              "masking_failures": 0}
     seen = set()
     with_pii, without_pii = [], []
+    other = {"english": [], "bangla_script": []}
     for p in products:
         category = p.get("Root Category") or p.get("Category")
         for rev in p.get("Reviews") or []:
@@ -103,6 +131,10 @@ def main():
             clean = clean_text(text)
             label = classify(clean, args.min_words)
             stats["language_rule"][label] += 1
+            if label == "bangla_script" and len(clean.split()) >= args.min_words:
+                other["bangla_script"].append((text, clean, category))
+            elif label == "english_or_unclear" and is_plain_english(clean):
+                other["english"].append((text, clean, category))
             if label != "banglish":
                 continue
             if len(clean) > args.max_chars:
@@ -156,11 +188,30 @@ def main():
     with open(os.path.join(args.out_dir, "teacher_inputs_banglishrev_test.jsonl"), "w", encoding="utf-8") as f:
         for r in records:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    # English-only and Bangla-script control slices (same privacy rules, separate files)
+    for key, n, prefix, lang, fname in [
+            ("english", args.n_english, "BR_EN_", "english", "teacher_inputs_banglishrev_english_test.jsonl"),
+            ("bangla_script", args.n_bangla, "BR_BN_", "bangla", "teacher_inputs_banglishrev_bangla_test.jsonl")]:
+        pool, uniq = [], set()
+        for text, clean, category in other[key]:
+            norm = " ".join(clean.lower().split())
+            if norm not in uniq and len(clean) <= args.max_chars and not BAD_CHARS_RE.search(clean):
+                uniq.add(norm)
+                pool.append((text, clean, category))
+        picked = rng.sample(pool, min(n, len(pool)))
+        with open(os.path.join(args.out_dir, fname), "w", encoding="utf-8") as f:
+            for i, (text, clean, category) in enumerate(picked, start=1):
+                found = detect(clean)
+                rec = make_record(f"{prefix}{i:06d}", text, clean, category, found, lang, key, "random")
+                f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        stats[f"{key}_candidates"] = len(pool)
+        stats["final"][key] = len(picked)
+
     stats = {k: dict(v) if isinstance(v, Counter) else v for k, v in stats.items()}
     with open(os.path.join(args.out_dir, "teacher_inputs_banglishrev_stats.json"), "w", encoding="utf-8") as f:
         json.dump(stats, f, indent=2, ensure_ascii=False)
     print(json.dumps(stats, indent=2, ensure_ascii=False))
-    print(f"\nWrote teacher_inputs_banglishrev_test.jsonl to {args.out_dir} "
+    print(f"\nWrote teacher_inputs_banglishrev_test.jsonl (+ _english_test, _bangla_test) to {args.out_dir} "
           "(PRIVATE: organic PII, never commit or share publicly)")
 
 

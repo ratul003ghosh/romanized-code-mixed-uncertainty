@@ -109,3 +109,20 @@ adds per-token values.
   Only 60 Banglish reviews had detected PII, so the slice is 460 (60 PII + 400 random), not 500.
   The 60 PII detections are rule-based and need a private manual check before this is called a real-PII slice.
 - All three files: validator 0 problems; teacher interface PASS.
+
+## 8. Control sets: English, Bangla script, medical (faculty request)
+
+| Set | Script | Output | Notes |
+|---|---|---|---|
+| BanglishRev English-only | `build_banglishrev_inputs.py` (same run) | `teacher_inputs_banglishrev_english_test.jsonl` (200) | strict rule: no Banglish word, at least 3 English function words |
+| BanglishRev Bangla script | same | `teacher_inputs_banglishrev_bangla_test.jsonl` (200) | reviews containing Bangla characters, at least 4 words |
+| BanglaCHQ-Summ (medical, CC-BY-NC-SA-4.0) | `build_medical_inputs.py` | `teacher_inputs_medical_test.jsonl` (235) | Bangla-script health questions + reference summary |
+
+All are eval-only (`split: test`) control sets with new `surface_form` values `english` and `bangla_script`;
+the method itself targets Romanized input. BanglishRev and medical text are private (git-ignored).
+The rule-based PII detector is built for Latin letters and ASCII digits, so "0 PII detected" in
+Bangla-script text does not mean the text contains no PII.
+
+Still pending: dialects (Vashantor, Mendeley bj5jgk878b, has Banglish text for Chittagong, Noakhali,
+Sylhet, Barishal, Mymensingh) and finance (Mendeley znsk27yk3h scam messages); both need a manual
+download from Mendeley before a converter can be written against their real columns.

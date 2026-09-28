@@ -63,7 +63,8 @@ TRANSLITERATION, NUMERIC_AMBIGUITY, PII_BOUNDARY, DIALECT_MEANING, INTENT
 The same PII value gets the same placeholder within one prompt.
 
 **surface_form** (results are reported per surface form, proposal Section 6.2):
-banglish, romanized, code_mixed, dialect, hinglish
+banglish, romanized, code_mixed, dialect, hinglish, bangla_script, english
+(`bangla_script` and `english` are control/comparison sets; the method targets Romanized input.)
 
 ## metadata.label_source
 
