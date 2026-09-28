@@ -41,15 +41,18 @@ Passing looks like this in the output:
 
 ## 3. Full run (only after the team confirms the smoke results)
 
-The input files are not in git (`data/processed/` is ignored). The team sends them, or they are rebuilt with:
+The input files are securely stored on a private Hugging Face repository and are not in git (`data/processed/` is ignored). To download and prepare them:
+
 ```bash
-pip install datasets
-PYTHONUTF8=1 python scripts/prepare_banglatlit.py
-PYTHONUTF8=1 python scripts/preprocess_dataset.py
-PYTHONUTF8=1 python scripts/export_teacher_inputs.py
-# -> data/processed/teacher_inputs_banglatlit_{train,dev,test}.jsonl
+# 1. Log in with an authorized token
+hf auth login
+
+# 2. Download and prepare splits locally
+python scripts/prepare_teacher_data.py --dataset mlpaper/teacher-inputs --split train --output data/processed/teacher_inputs_train.jsonl
+python scripts/prepare_teacher_data.py --dataset mlpaper/teacher-inputs --split dev --output data/processed/teacher_inputs_dev.jsonl
+python scripts/prepare_teacher_data.py --dataset mlpaper/teacher-inputs --split test --output data/processed/teacher_inputs_test.jsonl
 ```
-Note: BanglaTLit contains no PII. Use the PII-injected inputs if the team provides them instead.
+Note: Ensure you are logged into an account that has access to `mlpaper/teacher-inputs`.
 
 The heterogeneous teachers (Gemma-2-9B, Llama-3.1-8B) are gated on Hugging Face: log in, accept both
 licences, create a read token, then:
@@ -58,7 +61,7 @@ export HF_TOKEN=hf_...                     # Colab: use the Secrets panel instea
 CONFIG=configs/teacher_full.yaml           # small GPU: configs/teacher_full_small_gpu.yaml
 for SPLIT in train dev test; do
   python scripts/run_teacher.py --config $CONFIG \
-    --input data/processed/teacher_inputs_banglatlit_${SPLIT}.jsonl \
+    --input data/processed/teacher_inputs_${SPLIT}.jsonl \
     --output-dir experiments/teacher/${SPLIT}
 done
 ```
