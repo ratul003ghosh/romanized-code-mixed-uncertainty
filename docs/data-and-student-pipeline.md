@@ -98,3 +98,14 @@ adds per-token values.
   `split: test`, `eval_only: true`. **Contains organic PII: never commit, never share publicly, and use
   only after the team lead's ethics OK.**
 - Dialects (5-Dialects-BN) are still pending: its download link has not been found.
+
+### Results of the real build (Colab, 2026-09-28)
+- Hinglish: 400 inputs (dev 100 / test 300); 5 Devanagari rows skipped; 0 PII detected, so the Hinglish
+  set tests normalization and uncertainty, not PII masking (needs synthetic PII injection).
+  The `annotators_disagree` count treats any punctuation difference as disagreement; it is NOT a measure
+  of ambiguity and should not be reported as one.
+- BanglishRev: 1,746,943 reviews with text; the word-list rule marked 153,139 as Banglish (146,504 after
+  duplicates). This is a lower bound: some Banglish with unlisted spellings falls into "english_or_unclear".
+  Only 60 Banglish reviews had detected PII, so the slice is 460 (60 PII + 400 random), not 500.
+  The 60 PII detections are rule-based and need a private manual check before this is called a real-PII slice.
+- All three files: validator 0 problems; teacher interface PASS.

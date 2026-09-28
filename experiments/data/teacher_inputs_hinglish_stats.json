@@ -1,0 +1,31 @@
+{
+  "dataset": "LingoIITGN/COMI-LINGUA (TN)",
+  "limits": {
+    "dev": 100,
+    "test": 300
+  },
+  "seed": 42,
+  "raw_available": {
+    "test": 5000,
+    "train": 24547
+  },
+  "raw_read": {
+    "test": 302,
+    "dev": 103
+  },
+  "dropped": {
+    "devanagari_script": 5
+  },
+  "final": {
+    "dev": 100,
+    "test": 300
+  },
+  "records_with_pii_detected": {},
+  "pii_types": {},
+  "masking_failures": 0,
+  "annotators_disagree": {
+    "test": 298,
+    "dev": 96
+  },
+  "total_final": 400
+}
