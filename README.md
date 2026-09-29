@@ -50,7 +50,7 @@ pip install -r requirements.txt
     GPU teacher run: python scripts/test_gpu.py, then see docs/gpu-run.md
 
 ## 16. GPU Instructions
-See `docs/gpu-run.md`.
+See `docs/faculty-run.md`.
 
 ## 17. Current Status
 See `docs/status.md`.

@@ -73,6 +73,7 @@ banglish, romanized, code_mixed, dialect, hinglish
 | gold | Checked by human annotators | Evaluation only |
 | synthetic | Written by the team with fake PII | Testing PII code |
 | illustrative | Hand-made example, numbers not from experiments | Documentation only |
+| prediction | Output of a model (e.g. scripts/infer_student.py) | Evaluation input only |
 | none | No labels yet (raw text) | Input to teachers |
 
 **Rule: never evaluate on silver data, never train on gold data.**
