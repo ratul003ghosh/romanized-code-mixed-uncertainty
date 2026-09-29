@@ -47,7 +47,7 @@ pip install -r requirements.txt
 
 15. Running the pipeline
     CPU-safe checks (tests + PII eval): python scripts/run_full_experiment.py
-    GPU teacher run: python scripts/test_gpu.py, then see docs/gpu-run.md
+    GPU teacher run: python scripts/test_gpu.py, then see docs/faculty-run.md
 
 ## 16. GPU Instructions
 See `docs/faculty-run.md`.
