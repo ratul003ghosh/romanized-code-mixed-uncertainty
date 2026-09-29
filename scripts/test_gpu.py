@@ -43,7 +43,14 @@ def pick_config():
     """Full-precision config on big GPUs; 4-bit float16 config on GPUs < 20 GB or without bfloat16 (T4)."""
     import torch
     if not torch.cuda.is_available():
-        return "configs/teacher_smoke.yaml"
+        msg = ("\nSTOP: PyTorch sees no CUDA GPU, so the 7B teachers cannot run here.\n"
+               "  - No NVIDIA GPU on this machine: use Kaggle/Colab (docs/gpu-run.md, notebooks/05_teacher_kaggle.ipynb).\n"
+               "  - NVIDIA GPU present (nvidia-smi shows it) but torch is '+cpu': reinstall torch with CUDA, e.g.\n"
+               "    pip install --force-reinstall torch --index-url https://download.pytorch.org/whl/cu128\n")
+        print(msg)
+        log.write(msg)
+        log.close()
+        sys.exit(2)
     mem_gb = torch.cuda.get_device_properties(0).total_memory / 1e9
     small = mem_gb < 20 or not torch.cuda.is_bf16_supported()
     return "configs/teacher_smoke_small_gpu.yaml" if small else "configs/teacher_smoke.yaml"
