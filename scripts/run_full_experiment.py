@@ -42,11 +42,11 @@ def main() -> int:
 
     print("\n=== GPU teacher steps ===")
     if has_gpu():
-        print("GPU found. Run: python scripts/test_gpu.py, then see docs/gpu-run.md")
+        print("GPU found. Run: python scripts/test_gpu.py, then see docs/faculty-run.md")
         results["GPU teacher run"] = None
     else:
         print("SKIPPED: no NVIDIA GPU here. Run test_gpu.py and run_teacher.py "
-              "on Kaggle or the faculty GPU machine (see docs/gpu-run.md).")
+              "on Kaggle or the faculty GPU machine (see docs/faculty-run.md).")
         results["GPU teacher run"] = None
 
     print("\n=== SUMMARY ===")

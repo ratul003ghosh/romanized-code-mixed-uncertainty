@@ -44,7 +44,7 @@ def pick_config():
     import torch
     if not torch.cuda.is_available():
         msg = ("\nSTOP: PyTorch sees no CUDA GPU, so the 7B teachers cannot run here.\n"
-               "  - No NVIDIA GPU on this machine: use Kaggle/Colab (docs/gpu-run.md, notebooks/05_teacher_kaggle.ipynb).\n"
+               "  - No NVIDIA GPU on this machine: use Kaggle/Colab (docs/faculty-run.md).\n"
                "  - NVIDIA GPU present (nvidia-smi shows it) but torch is '+cpu': reinstall torch with CUDA, e.g.\n"
                "    pip install --force-reinstall torch --index-url https://download.pytorch.org/whl/cu128\n")
         print(msg)
