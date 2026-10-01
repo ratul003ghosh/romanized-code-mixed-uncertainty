@@ -54,28 +54,52 @@ def round2(v):
     return None if v is None else round(float(v), 2)
 
 
-def make_target(r):
+def make_target(r, args=None):
     """Keep only what the student should output (proposal Section 2)."""
+    uncertainties = []
+    for u in r["uncertainties"]:
+        unc = {"span": u["span"]}
+        if not (args and args.ablate_types):
+            unc["types"] = u["types"]
+        unc["candidates"] = u.get("candidates", [])
+        if not (args and args.ablate_aleatoric):
+            unc["aleatoric"] = round2(u.get("aleatoric"))
+        if not (args and args.ablate_epistemic):
+            unc["epistemic"] = round2(u.get("epistemic"))
+        
+        # If any keys were ablated, we might want to keep the object structure if there's anything left.
+        # But wait, if types, aleatoric, epistemic are all removed, we just have 'span'.
+        uncertainties.append(unc)
+        
+    if args and args.ablate_uncertainty:
+        uncertainties = []
+
+    routing = None if (args and args.ablate_routing) else r["routing"]
+
     return {
         "sanitized_prompt": r["sanitized_prompt"],
-        # "span" is the PII text as written in the input, as in the teachers' own JSON; it lets
-        # infer_student.py locate predicted PII in clean_input for span metrics. This list stays
-        # on the device; only sanitized_prompt leaves it.
         "pii": [{"type": p["type"], "placeholder": p["placeholder"], "span": p.get("text")} for p in r["pii"]],
         "preserved_entities": r["preserved_entities"],
-        "uncertainties": [
-            {"span": u["span"], "types": u["types"], "candidates": u.get("candidates", []),
-             "aleatoric": round2(u.get("aleatoric")), "epistemic": round2(u.get("epistemic"))}
-            for u in r["uncertainties"]
-        ],
-        "routing": r["routing"],
+        "uncertainties": uncertainties,
+        "routing": routing,
     }
 
 
-def main(in_path, out_path):
+def main():
+    import argparse
+    ap = argparse.ArgumentParser(description="Build student training data with optional ablations.")
+    ap.add_argument("in_path", help="Input silver.jsonl")
+    ap.add_argument("out_path", help="Output student_train.jsonl")
+    ap.add_argument("--ablate-aleatoric", action="store_true", help="Remove aleatoric scores")
+    ap.add_argument("--ablate-epistemic", action="store_true", help="Remove epistemic scores")
+    ap.add_argument("--ablate-types", action="store_true", help="Remove uncertainty types")
+    ap.add_argument("--ablate-uncertainty", action="store_true", help="Remove all uncertainty")
+    ap.add_argument("--ablate-routing", action="store_true", help="Remove routing decisions")
+    args = ap.parse_args()
+
     reasons = Counter()
     kept = 0
-    with open(in_path, encoding="utf-8") as fin, open(out_path, "w", encoding="utf-8") as fout:
+    with open(args.in_path, encoding="utf-8") as fin, open(args.out_path, "w", encoding="utf-8") as fout:
         for line in fin:
             if not line.strip():
                 continue
@@ -91,16 +115,14 @@ def main(in_path, out_path):
                 "messages": [
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": r["clean_input"]},
-                    {"role": "assistant", "content": json.dumps(make_target(r), ensure_ascii=False)},
+                    {"role": "assistant", "content": json.dumps(make_target(r, args), ensure_ascii=False)},
                 ],
             }
             fout.write(json.dumps(example, ensure_ascii=False) + "\n")
             kept += 1
-    print(f"Kept {kept} training examples -> {out_path}")
+    print(f"Kept {kept} training examples -> {args.out_path}")
     print(f"Discarded {sum(reasons.values())}: {dict(reasons)}")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        sys.exit("Usage: python scripts/build_student_data.py INPUT.jsonl OUTPUT.jsonl")
-    main(sys.argv[1], sys.argv[2])
+    main()
