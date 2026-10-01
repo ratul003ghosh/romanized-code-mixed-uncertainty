@@ -1,0 +1,10 @@
+{"id": "demo_01", "category": "normal Banglish", "input": "Bhai kemon aso, ami to aj office ashte parbo na."}
+{"id": "demo_02", "category": "obvious PII", "input": "Amar phone number hocche 01711223344, ekhane call dio."}
+{"id": "demo_03", "category": "ambiguous PII boundary", "input": "Ami Gulshan 2 er kachakachi thaki, Rahman bhaiyer mudi dokaner pashe."}
+{"id": "demo_04", "category": "numeric ambiguity", "input": "Vai 500 naki 5000 nite bolchilo?"}
+{"id": "demo_05", "category": "dialect/meaning ambiguity", "input": "Chhera ta ke ektu deikkha rakhben."}
+{"id": "demo_06", "category": "multiple PII in one sentence", "input": "Sumi ar Riaz er account 1234567890 theke abdul.korim@example.com e mail gese."}
+{"id": "demo_07", "category": "ambiguous number", "input": "Oita ki amar ID 1000 naki amar kache 1000 taka pabe?"}
+{"id": "demo_08", "category": "uncertainty/routing", "input": "Amar bKash PIN ta vul hoise 4321 disilam, ekhon ki korbo?"}
+{"id": "demo_09", "category": "code-mixed English/Banglish", "input": "Please transaction details ta check koren, customer er OTP chilo 567890."}
+{"id": "demo_10", "category": "spelling/transliteration ambiguity", "input": "Bhai apnar bank er name ki brak naki brac?"}
