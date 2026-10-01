@@ -41,6 +41,24 @@ Passing looks like this in the output:
 
 ## 3. Full run (only after the team confirms the smoke results)
 
+### Windows (PowerShell): use the script
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\run_teacher_all.ps1 -Limit 20     # trial: 20 prompts per split
+powershell -ExecutionPolicy Bypass -File scripts\run_teacher_all.ps1               # full run
+```
+
+It checks the GPU and picks the config that fits (GPUs under 20 GB get the 4-bit `teacher_full_small_gpu.yaml`),
+checks that the input files exist and are not empty, checks Hugging Face access to every model, then runs
+train, dev and test one after the other. Each split's console output is saved to
+`experiments\teacher\<split>.console.log`. It stops with a clear message at the first problem.
+
+Do not use `configs/teacher_full.yaml` on a 12-16 GB GPU: the 7B teacher needs about 16 GB in bfloat16, so
+layers are moved to CPU memory and generation becomes so slow that nothing seems to happen. The code now
+refuses to start in that case.
+
+### Linux / macOS
+
 The input files are securely stored on a private Hugging Face repository and are not in git (`data/processed/` is ignored). To download and prepare them:
 
 ```bash
