@@ -66,3 +66,34 @@ def test_discordance():
          "preserved_entities": [], "ambiguous_spans": []}
     b = {**a, "pii": [{"type": "ACCOUNT", "span": "1987654321", "placeholder": "<ACCOUNT_1>"}]}
     assert discordance("pii", a["pii"][0], [a, b]) == 0.5
+
+
+def test_model_partly_on_cpu_is_refused(monkeypatch):
+    """device_map='auto' moving layers to CPU makes a run look frozen; load() must stop instead."""
+    import pytest
+    from src.teachers import models
+
+    class Fake:
+        hf_device_map = {"model.layers.0": 0, "model.layers.27": "cpu"}
+        def eval(self):
+            return self
+
+    class Props:
+        total_memory = 12e9
+
+    monkeypatch.setattr(models.AutoTokenizer, "from_pretrained", lambda *a, **k: type("T", (), {"pad_token": "x"})())
+    monkeypatch.setattr(models.AutoModelForCausalLM, "from_pretrained", lambda *a, **k: Fake())
+    monkeypatch.setattr(models.torch.cuda, "is_available", lambda: True)
+    monkeypatch.setattr(models.torch.cuda, "get_device_properties", lambda i: Props())
+    with pytest.raises(RuntimeError, match="does not fit in GPU memory"):
+        models.load("Qwen/Qwen2.5-7B-Instruct")
+
+
+def test_missing_input_file_stops_before_any_work(tmp_path):
+    import subprocess, sys, os
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    res = subprocess.run([sys.executable, "scripts/run_teacher.py", "--config", "configs/teacher_smoke.yaml",
+                          "--input", str(tmp_path / "nope.jsonl"), "--output-dir", str(tmp_path / "out")],
+                         cwd=root, capture_output=True, text=True)
+    assert res.returncode != 0 and "input file not found" in res.stderr
+    assert not (tmp_path / "out").exists()

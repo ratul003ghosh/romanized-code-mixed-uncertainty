@@ -35,6 +35,7 @@ def run(cfg):
             if group["kind"] == "same_tokenizer":
                 models.activate(model, variant, adapters)
             log.info("generating %s on %d inputs", tid, len(todo))
+            t_start = time.time()
             for b in range(0, len(todo), bs):
                 batch = todo[b:b + bs]
                 texts = [models.chat_text(tok, build_messages(variant, x["text"])) for x in batch]
@@ -53,6 +54,10 @@ def run(cfg):
                                         "parsed": parsed, "valid": parsed is not None and not errors,
                                         "parse_ok": parsed is not None, "errors": errors,
                                         "sec_per_item": round(dt, 3)})
+                done_n = min(b + bs, len(todo))
+                left = (time.time() - t_start) / done_n * (len(todo) - done_n)
+                log.info("%s: %d/%d done, %.1f s per input, about %.0f min left for this teacher",
+                         tid, done_n, len(todo), dt, left / 60)
         if "_loaded" in group:
             models.unload(group.pop("_loaded")[1])
     log.info("generation done; peak GPU mem %s GB", models.gpu_mem_gb())
