@@ -24,8 +24,22 @@ def load(name, dtype="bfloat16", load_in_4bit=False, padding_side="left"):
         from transformers import BitsAndBytesConfig
         kwargs["quantization_config"] = BitsAndBytesConfig(
             load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=getattr(torch, dtype))
+    if not torch.cuda.is_available():
+        log.warning("no CUDA GPU: %s runs on the CPU (only sensible for tests with tiny models)", name)
     model = AutoModelForCausalLM.from_pretrained(name, **kwargs).eval()
-    log.info("loaded %s on %s", name, model.device)
+    placed = set(map(str, (getattr(model, "hf_device_map", None) or {}).values()))
+    if placed & {"cpu", "disk"}:
+        # device_map="auto" silently moves layers that do not fit on the GPU to CPU RAM or disk.
+        # Generation then takes hours per batch and looks like "nothing happens".
+        raise RuntimeError(
+            f"{name} does not fit in GPU memory ({torch.cuda.get_device_properties(0).total_memory / 1e9:.0f} GB): "
+            f"parts were placed on {sorted(placed & {'cpu', 'disk'})}. Use a *_small_gpu config "
+            "(4-bit, about 5.5 GB for the 7B model), e.g. configs/teacher_full_small_gpu.yaml.")
+    if torch.cuda.is_available():
+        log.info("loaded %s on %s (%s, 4-bit=%s), GPU memory in use %.1f GB", name, torch.cuda.get_device_name(0),
+                 dtype, load_in_4bit, torch.cuda.memory_allocated() / 1e9)
+    else:
+        log.info("loaded %s on %s", name, model.device)
     return tok, model
 
 

@@ -3,6 +3,7 @@ import argparse
 import json
 import logging
 import os
+import sys
 import time
 
 import yaml
@@ -29,11 +30,23 @@ def main():
     if args.output_dir:
         cfg["output_dir"] = args.output_dir
         cfg["run_name"] = f"{cfg.get('run_name', 'run')}:{args.output_dir.rstrip('/').split('/')[-1]}"
+    # Fail loudly before any GPU work: a missing or empty input file used to finish "successfully"
+    # with nothing generated.
+    inp = cfg.get("input_file")
+    if args.stage in ("all", "generate", "pivot", "spans"):
+        if not inp or not os.path.exists(inp):
+            sys.exit(f"ERROR: input file not found: {inp!r} (working folder: {os.getcwd()}).\n"
+                     "Prepare the inputs first (docs/faculty-run.md, step 3).")
+        n_lines = sum(1 for line in open(inp, encoding="utf-8") if line.strip())
+        if n_lines == 0:
+            sys.exit(f"ERROR: input file is empty: {inp}")
     os.makedirs(cfg["output_dir"], exist_ok=True)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-                        handlers=[logging.StreamHandler(), logging.FileHandler(out_path(cfg, "run.log"))])
+                        handlers=[logging.StreamHandler(),
+                                  logging.FileHandler(out_path(cfg, "run.log"), encoding="utf-8")])
     log = logging.getLogger("run")
-    with open(out_path(cfg, "config_used.yaml"), "w") as f:
+    log.info("config %s | input %s | output %s", args.config, inp, os.path.abspath(cfg["output_dir"]))
+    with open(out_path(cfg, "config_used.yaml"), "w", encoding="utf-8") as f:
         yaml.safe_dump(cfg, f)
     t0 = time.time()
     info_path = out_path(cfg, "score_info.json")
