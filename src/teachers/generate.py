@@ -1,5 +1,6 @@
 """Stage A (GPU): every teacher generates the full JSON for every input (greedy)."""
 import logging
+import os
 import time
 
 import torch
@@ -14,8 +15,21 @@ log = logging.getLogger(__name__)
 
 def run(cfg):
     inputs = load_inputs(cfg)
-    path = out_path(cfg, "generations.jsonl")
-    done = {(r["id"], r["teacher_id"]) for r in read_jsonl(path)}   # resume support
+    
+    shard_info = cfg.get("worker_shard")
+    shard_suffix = ""
+    if shard_info:
+        s_idx, s_total = map(int, shard_info.split("/"))
+        inputs = [x for i, x in enumerate(inputs) if i % s_total == s_idx]
+        shard_suffix = f"_shard{s_idx}"
+        
+    path = out_path(cfg, f"generations{shard_suffix}.jsonl")
+    
+    # Read done from shard file, and also from main file if resuming a mixed run
+    done = {(r["id"], r["teacher_id"]) for r in read_jsonl(path)}
+    if shard_info and os.path.exists(out_path(cfg, "generations.jsonl")):
+        done.update((r["id"], r["teacher_id"]) for r in read_jsonl(out_path(cfg, "generations.jsonl")))
+        
     gcfg = cfg.get("generation", {})
     bs, max_new = gcfg.get("batch_size", 4), gcfg.get("max_new_tokens", 512)
     adapters = cfg["same_tokenizer"].get("adapters")

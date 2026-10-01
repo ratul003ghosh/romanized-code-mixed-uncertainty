@@ -6,6 +6,7 @@ Then A_t, E_t, H(p_bar_t), per-teacher NLL, and top-k of the entropy-weighted
 KD target (Eq. 6) are saved per pivot token.
 """
 import logging
+import os
 import time
 
 import torch
@@ -45,9 +46,22 @@ def run(cfg):
     variants, adapters = s["variants"], s.get("adapters")
     max_tok, tau = sc.get("max_pivot_tokens", 768), sc.get("tau", 1.0)
     top_k, alt_k = sc.get("kd_top_k", 10), sc.get("alt_k", 3)
-    path = out_path(cfg, "token_scores.jsonl")
+    shard_info = cfg.get("worker_shard")
+    shard_suffix = ""
+    if shard_info:
+        s_idx, s_total = map(int, shard_info.split("/"))
+        shard_suffix = f"_shard{s_idx}"
+        
+    path = out_path(cfg, f"token_scores{shard_suffix}.jsonl")
     done = {r["id"] for r in read_jsonl(path)}
-    pivots = [p for p in read_jsonl(out_path(cfg, "pivots.jsonl")) if p["pivot_ok"] and p["id"] not in done]
+    if shard_info and os.path.exists(out_path(cfg, "token_scores.jsonl")):
+        done.update(r["id"] for r in read_jsonl(out_path(cfg, "token_scores.jsonl")))
+        
+    pivots = [p for p in read_jsonl(out_path(cfg, "pivots.jsonl")) if p["pivot_ok"]]
+    if shard_info:
+        pivots = [p for i, p in enumerate(pivots) if i % s_total == s_idx]
+    
+    pivots = [p for p in pivots if p["id"] not in done]
     if not pivots:
         log.info("nothing to score")
         return path, {}
